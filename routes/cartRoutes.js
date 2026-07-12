@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const cartController = require('../controllers/cartController');
-const { verifyToken } = require('../middleware/authMiddleware');
+const verifyToken = require('../middleware/authMiddleware');
 
 // All cart routes require the user to be logged in
 router.use(verifyToken);

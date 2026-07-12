@@ -1,503 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Your Cart | GreenWheel Auto</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 24px;
-            background-color: #f5f5f5;
-            color: #222;
-        }
-
-        header {
-            margin-bottom: 24px;
-        }
-
-        h1 {
-            margin-bottom: 6px;
-        }
-
-        .subtitle {
-            margin-top: 0;
-            color: #555;
-        }
-
-        .cart-section {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            padding: 18px 0;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .cart-item:last-child {
-            border-bottom: none;
-        }
-
-        .item-details {
-            flex: 1;
-        }
-
-        .item-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0 0 8px;
-        }
-
-        .item-price {
-            margin: 4px 0;
-        }
-
-        .quantity-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .quantity-value {
-            min-width: 28px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        button {
-            padding: 9px 14px;
-            border: 1px solid #555;
-            border-radius: 5px;
-            background-color: white;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #ededed;
-        }
-
-        button:disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .remove-button {
-            color: #a00000;
-            border-color: #a00000;
-            margin-top: 12px;
-        }
-
-        .primary-button {
-            background-color: #1f5f3f;
-            color: white;
-            border-color: #1f5f3f;
-        }
-
-        .primary-button:hover {
-            background-color: #174a31;
-        }
-
-        .cart-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .actions {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .message {
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 16px;
-        }
-
-        .error-message {
-            background-color: #ffe8e8;
-            color: #8a0000;
-        }
-
-        .success-message {
-            background-color: #e7f7ed;
-            color: #175c32;
-        }
-
-        .empty-cart {
-            text-align: center;
-            padding: 30px 10px;
-            color: #555;
-        }
-
-        #devTokenBox {
-            display: none;
-            background-color: #fff8d6;
-            border: 1px solid #c6a800;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        #devTokenInput {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 9px;
-            margin: 8px 0;
-        }
-
-        @media (max-width: 600px) {
-            .cart-item,
-            .cart-summary,
-            .actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-        }
-    </style>
 </head>
 
 <body>
 
 <header>
     <h1>Your Shopping Cart</h1>
-    <p class="subtitle">
+    <p>
         Review your selected vehicles before continuing to checkout.
     </p>
 </header>
 
-<!-- Only used while testing before the login module is available. -->
-<div id="devTokenBox">
-    <strong>Developer testing</strong>
+<div id="statusMessage"></div>
 
-    <p>
-        A login session was not found. Paste a test token below to test this page.
-    </p>
-
-    <label for="devTokenInput">Test login token</label>
-
-    <input
-        type="text"
-        id="devTokenInput"
-        placeholder="Paste JWT token here"
-    >
-
-    <button type="button" onclick="saveDevToken()">
-        Save Test Token
-    </button>
-</div>
-
-<div id="statusMessage" aria-live="polite"></div>
-
-<main class="cart-section">
+<main>
     <div id="cartContainer">
         <p>Loading your cart...</p>
     </div>
 </main>
 
-<section class="cart-section">
-    <div class="cart-summary">
-        <span>Order total</span>
-        <span id="cartTotal">$0.00</span>
-    </div>
+<section>
 
-    <div class="actions">
-        <button
-            type="button"
-            onclick="window.location.href='catalogue.html'"
-        >
-            Continue Shopping
-        </button>
+    <h2>Order Total</h2>
+    <p id="cartTotal">$0.00</p>
 
-        <button
-            type="button"
-            id="checkoutButton"
-            class="primary-button"
-            onclick="goToCheckout()"
-            disabled
-        >
-            Proceed to Checkout
-        </button>
-    </div>
+    <button
+        type="button"
+        onclick="window.location.href='catalogue.html'">
+        Continue Shopping
+    </button>
+
+    <button
+        type="button"
+        id="checkoutButton"
+        onclick="goToCheckout()"
+        disabled>
+        Proceed to Checkout
+    </button>
+
 </section>
 
 <script>
-    function getToken() {
-        return localStorage.getItem('token');
+
+function getToken() {
+    return localStorage.getItem('token');
+}
+
+function formatCurrency(value) {
+    return Number(value).toLocaleString('en-CA', {
+        style: 'currency',
+        currency: 'CAD'
+    });
+}
+
+function showMessage(message) {
+    document.getElementById('statusMessage').textContent = message;
+}
+
+function clearMessage() {
+    document.getElementById('statusMessage').textContent = '';
+}
+
+async function loadCart() {
+
+    const token = getToken();
+    const container = document.getElementById('cartContainer');
+    const checkoutButton = document.getElementById('checkoutButton');
+
+    clearMessage();
+
+    if (!token) {
+
+        container.innerHTML = `
+            <p>Please sign in to view your shopping cart.</p>
+        `;
+
+        checkoutButton.disabled = true;
+        return;
     }
 
-    function formatCurrency(value) {
-        return Number(value).toLocaleString('en-CA', {
-            style: 'currency',
-            currency: 'CAD'
+    container.innerHTML = '<p>Loading your cart...</p>';
+
+    try {
+
+        const response = await fetch('/api/cart', {
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
         });
-    }
 
-    function showMessage(message, type = 'error') {
-        const messageBox = document.getElementById('statusMessage');
+        const data = await response.json();
 
-        messageBox.className =
-            type === 'success'
-                ? 'message success-message'
-                : 'message error-message';
-
-        messageBox.textContent = message;
-    }
-
-    function clearMessage() {
-        const messageBox = document.getElementById('statusMessage');
-        messageBox.className = '';
-        messageBox.textContent = '';
-    }
-
-    function saveDevToken() {
-        const tokenInput = document.getElementById('devTokenInput');
-        const token = tokenInput.value.trim();
-
-        if (!token) {
-            showMessage('Please enter a test token before continuing.');
-            return;
+        if (!response.ok) {
+            throw new Error(data.error || 'Your cart could not be loaded.');
         }
 
-        localStorage.setItem('token', token);
-        document.getElementById('devTokenBox').style.display = 'none';
+        renderCart(data.items, data.total);
 
-        clearMessage();
-        loadCart();
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <p>We could not load your cart.</p>
+        `;
+
+        document.getElementById('cartTotal').textContent = '$0.00';
+        checkoutButton.disabled = true;
+
+        showMessage('Something went wrong while loading your cart. Please try again.');
+    }
+}
+
+function renderCart(items, total) {
+
+    const container = document.getElementById('cartContainer');
+    const checkoutButton = document.getElementById('checkoutButton');
+
+    if (!items || items.length === 0) {
+
+        container.innerHTML = `
+            <h2>Your cart is empty</h2>
+            <p>Browse our vehicle catalogue to find a vehicle.</p>
+        `;
+
+        document.getElementById('cartTotal').textContent = '$0.00';
+        checkoutButton.disabled = true;
+        return;
     }
 
-    async function loadCart() {
-        const token = getToken();
-        const container = document.getElementById('cartContainer');
-        const checkoutButton = document.getElementById('checkoutButton');
+    let cartHtml = '';
 
-        clearMessage();
+    for (const item of items) {
 
-        if (!token) {
-            container.innerHTML = `
-                <div class="empty-cart">
-                    <p>Please sign in to view your shopping cart.</p>
-                </div>
-            `;
+        const vehicleName =
+            (item.brand || item.make || 'Vehicle') +
+            ' ' +
+            (item.model || '');
 
-            checkoutButton.disabled = true;
-            document.getElementById('devTokenBox').style.display = 'block';
-            return;
+        cartHtml += `
+            <hr>
+
+            <h3>${vehicleName}</h3>
+
+            <p>Price: ${formatCurrency(item.price)}</p>
+
+            <p>Quantity: ${item.quantity}</p>
+
+            <p>
+                Item Total:
+                ${formatCurrency(Number(item.price) * Number(item.quantity))}
+            </p>
+
+            <button
+                type="button"
+                onclick="changeQuantity(${item.cartItemId}, ${item.quantity - 1})"
+                ${item.quantity <= 1 ? 'disabled' : ''}>
+                -
+            </button>
+
+            <button
+                type="button"
+                onclick="changeQuantity(${item.cartItemId}, ${item.quantity + 1})">
+                +
+            </button>
+
+            <button
+                type="button"
+                onclick="removeItem(${item.cartItemId})">
+                Remove from Cart
+            </button>
+        `;
+    }
+
+    container.innerHTML = cartHtml;
+    document.getElementById('cartTotal').textContent =
+        formatCurrency(total);
+
+    checkoutButton.disabled = false;
+}
+
+async function changeQuantity(cartItemId, quantity) {
+
+    if (quantity < 1) {
+        return;
+    }
+
+    const token = getToken();
+
+    try {
+
+        const response = await fetch('/api/cart/' + cartItemId, {
+            method: 'PUT',
+            headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ quantity })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'The quantity could not be updated.');
         }
 
-        document.getElementById('devTokenBox').style.display = 'none';
-        container.innerHTML = '<p>Loading your cart...</p>';
+        showMessage('Cart quantity updated.');
+        await loadCart();
 
-        try {
-            const response = await fetch('/api/cart', {
-                headers: {
-                    Authorization: 'Bearer ' + token
-                }
-            });
+    } catch (error) {
 
-            const data = await response.json();
+        console.error(error);
+        showMessage(error.message);
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Your cart could not be loaded.');
+    }
+}
+
+async function removeItem(cartItemId) {
+
+    const shouldRemove = window.confirm(
+        'Remove this vehicle from your cart?'
+    );
+
+    if (!shouldRemove) {
+        return;
+    }
+
+    const token = getToken();
+
+    try {
+
+        const response = await fetch('/api/cart/' + cartItemId, {
+            method: 'DELETE',
+            headers: {
+                Authorization: 'Bearer ' + token
             }
+        });
 
-            renderCart(data.items, data.total);
-        } catch (error) {
-            console.error(error);
+        const data = await response.json();
 
-            container.innerHTML = `
-                <div class="empty-cart">
-                    <p>We could not load your cart.</p>
-                </div>
-            `;
-
-            document.getElementById('cartTotal').textContent = '$0.00';
-            checkoutButton.disabled = true;
-
-            showMessage(
-                'Something went wrong while loading your cart. Please try again.'
-            );
+        if (!response.ok) {
+            throw new Error(data.error || 'The item could not be removed.');
         }
+
+        showMessage('The vehicle was removed from your cart.');
+        await loadCart();
+
+    } catch (error) {
+
+        console.error(error);
+        showMessage(error.message);
+
     }
+}
 
-    function renderCart(items, total) {
-        const container = document.getElementById('cartContainer');
-        const checkoutButton = document.getElementById('checkoutButton');
+function goToCheckout() {
+    window.location.href = 'checkout.html';
+}
 
-        if (!items || items.length === 0) {
-            container.innerHTML = `
-                <div class="empty-cart">
-                    <h2>Your cart is empty</h2>
-                    <p>Browse our vehicle catalogue to find a vehicle.</p>
-                </div>
-            `;
+loadCart();
 
-            document.getElementById('cartTotal').textContent = '$0.00';
-            checkoutButton.disabled = true;
-            return;
-        }
-
-        let cartHtml = '';
-
-        for (const item of items) {
-            const vehicleName =
-                (item.brand || item.make || 'Vehicle') +
-                ' ' +
-                (item.model || '');
-
-            cartHtml += `
-                <article class="cart-item">
-                    <div class="item-details">
-                        <p class="item-name">${vehicleName}</p>
-
-                        <p class="item-price">
-                            Price: ${formatCurrency(item.price)}
-                        </p>
-
-                        <p>
-                            Item total:
-                            ${formatCurrency(
-                                Number(item.price) * Number(item.quantity)
-                            )}
-                        </p>
-
-                        <div class="quantity-controls">
-                            <button
-                                type="button"
-                                aria-label="Decrease quantity"
-                                onclick="changeQuantity(
-                                    ${item.cartItemId},
-                                    ${item.quantity - 1}
-                                )"
-                                ${item.quantity <= 1 ? 'disabled' : ''}
-                            >
-                                −
-                            </button>
-
-                            <span class="quantity-value">
-                                ${item.quantity}
-                            </span>
-
-                            <button
-                                type="button"
-                                aria-label="Increase quantity"
-                                onclick="changeQuantity(
-                                    ${item.cartItemId},
-                                    ${item.quantity + 1}
-                                )"
-                            >
-                                +
-                            </button>
-                        </div>
-
-                        <button
-                            type="button"
-                            class="remove-button"
-                            onclick="removeItem(${item.cartItemId})"
-                        >
-                            Remove from Cart
-                        </button>
-                    </div>
-                </article>
-            `;
-        }
-
-        container.innerHTML = cartHtml;
-        document.getElementById('cartTotal').textContent =
-            formatCurrency(total);
-
-        checkoutButton.disabled = false;
-    }
-
-    async function changeQuantity(cartItemId, quantity) {
-        if (quantity < 1) {
-            return;
-        }
-
-        const token = getToken();
-
-        try {
-            const response = await fetch('/api/cart/' + cartItemId, {
-                method: 'PUT',
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ quantity })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(
-                    data.error || 'The quantity could not be updated.'
-                );
-            }
-
-            showMessage('Cart quantity updated.', 'success');
-            await loadCart();
-        } catch (error) {
-            console.error(error);
-            showMessage(error.message);
-        }
-    }
-
-    async function removeItem(cartItemId) {
-        const shouldRemove = window.confirm(
-            'Remove this vehicle from your cart?'
-        );
-
-        if (!shouldRemove) {
-            return;
-        }
-
-        const token = getToken();
-
-        try {
-            const response = await fetch('/api/cart/' + cartItemId, {
-                method: 'DELETE',
-                headers: {
-                    Authorization: 'Bearer ' + token
-                }
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(
-                    data.error || 'The item could not be removed.'
-                );
-            }
-
-            showMessage('The vehicle was removed from your cart.', 'success');
-            await loadCart();
-        } catch (error) {
-            console.error(error);
-            showMessage(error.message);
-        }
-    }
-
-    function goToCheckout() {
-        window.location.href = 'checkout.html';
-    }
-
-    loadCart();
 </script>
 
 </body>
+
 </html>
