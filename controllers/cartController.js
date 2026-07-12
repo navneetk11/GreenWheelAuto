@@ -36,7 +36,7 @@ exports.addToCart = async (req, res) => {
         if (!vehicle) {
             return res.status(404).json({ error: 'Vehicle not found' });
         }
-        if (vehicle.stock < quantity) {
+        if (vehicle.quantity < quantity) {
             return res.status(400).json({ error: 'Not enough stock available' });
         }
 
@@ -103,7 +103,7 @@ exports.checkout = async (req, res) => {
         // verify stock availability before creating the order
         for (const item of items) {
             if (item.stock < item.quantity) {
-                return res.status(400).json({ error: `Not enough stock for ${item.make} ${item.model}` });
+                return res.status(400).json({ error: `Not enough stock for ${item.brand} ${item.model}` });
             }
         }
 
@@ -112,10 +112,39 @@ exports.checkout = async (req, res) => {
             total += Number(item.price) * item.quantity;
         }
 
-        const orderId = await cartDAO.createOrder(userId, total);
+        const {
+            street,
+            city,
+            province,
+            zip
+        } = req.body;
+        if (!street || !city || !province || !zip) {
+    return res.status(400).json({
+        error: 'Shipping address is required'
+    });
+}
+        const addressId =
+            await cartDAO.createAddress(
+                userId,
+                street,
+                city,
+                province,
+                zip
+            );
+        const orderId =
+            await cartDAO.createOrder(
+                userId,
+                addressId,
+                total
+            );
 
         for (const item of items) {
-            await cartDAO.addOrderItem(orderId, item.vehicle_id, item.quantity, item.price);
+            await cartDAO.addOrderItem(
+                orderId,
+                item.vid,
+                item.quantity,
+                item.price
+            );
         }
 
         await cartDAO.clearCart(userId);
@@ -146,22 +175,26 @@ exports.processPayment = async (req, res) => {
         if (!order) {
             return res.status(404).json({ error: 'Order not found' });
         }
-        if (order.payment_status === 'paid') {
+        if (order.status === 'PROCESSED') {
             return res.status(400).json({ error: 'Order already paid' });
         }
 
-        // Generate a mock transaction reference
-        const transactionRef = 'TXN' + Date.now() + Math.floor(Math.random() * 1000);
-        const paymentStatus = 'success';
+        
+        const approved = (Math.floor(Math.random() * 3) !== 2);
 
-        await cartDAO.createPayment(orderId, order.total_amount, paymentMethod, paymentStatus, transactionRef);
-        await cartDAO.updateOrderStatus(orderId, 'confirmed', 'paid');
-
-        res.json({
-            message: 'Payment successful',
-            transactionRef,
-            orderId
-        });
+        if (approved) {
+            await cartDAO.updateOrderStatus(orderId, 'PROCESSED');
+            return res.json({
+                message: 'Order Successfully Completed!',
+                orderId
+            });
+        } else {
+            await cartDAO.updateOrderStatus(orderId, 'DENIED');
+            return res.status(400).json({
+                message: 'Credit Card Authorization Failed.',
+                orderId
+            });
+        }
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Payment failed' });

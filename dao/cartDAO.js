@@ -75,7 +75,7 @@ async function clearCart(userId) {
 
 async function getVehicleById(vehicleId) {
     const [rows] = await db.query(
-        'SELECT * FROM Item WHERE vid = ?',
+        'SELECT * FROM Item WHERE vid = ? LIMIT 1',
         [vehicleId]
     );
 
@@ -102,6 +102,10 @@ async function createOrder(userId, addressId, totalAmount) {
     );
 
     const user = userRows[0];
+
+    if (!user) {
+        throw new Error('User not found');
+    }
 
     const [result] = await db.query(
         `INSERT INTO PO
@@ -164,12 +168,10 @@ async function updateOrderStatus(orderId, status) {
     );
 }
 
-// Temporary placeholder until controller is updated
-// Payment status is stored in PO.status using the 2/3 rule
+// Payment is represented by PO.status.
+// This function stays as a placeholder so the controller can call it.
 async function createPayment(orderId, amount, paymentMethod, status, transactionRef) {
-
     await updateOrderStatus(orderId, status);
-
     return orderId;
 }
 
