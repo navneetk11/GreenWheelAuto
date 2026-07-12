@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Range Suitability Checker</title>
+</head>
+<body>
+
+    <h1>EV Range Suitability Checker</h1>
+    <p>Find the perfect electric vehicle for your daily commute</p>
+
+    <hr>
+
+    <form id="rangeForm">
+        <label for="dailyCommute">Daily Commute (km):</label>
+        <input type="number" id="dailyCommute" placeholder="e.g., 50" min="1" required>
+        <br><br>
+
+        <label for="drivingType">Driving Type:</label>
+        <select id="drivingType" required>
+            <option value="">Select driving type...</option>
+            <option value="City">City (Stop & Go)</option>
+            <option value="Highway">Highway (High Speed)</option>
+            <option value="Mixed">Mixed (City + Highway)</option>
+        </select>
+        <br><br>
+
+        <label for="homeCharger">Home Charger:</label>
+        <select id="homeCharger">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+        </select>
+        <br><br>
+
+        <button type="submit">Check Suitability</button>
+    </form>
+
+    <hr>
+
+    <div id="loading">
+        <p>Analyzing vehicles for your commute...</p>
+    </div>
+
+    <div id="errorMessage"></div>
+
+    <div id="resultsSection"></div>
+
+    <script>
+        document.getElementById('rangeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const dailyCommute = document.getElementById('dailyCommute').value;
+            const drivingType = document.getElementById('drivingType').value;
+            const homeCharger = document.getElementById('homeCharger').value;
+            const checkBtn = document.querySelector('button[type="submit"]');
+            const loading = document.getElementById('loading');
+            const resultsSection = document.getElementById('resultsSection');
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (!dailyCommute || !drivingType) {
+                errorMessage.innerHTML = '<p style="color: red;">Please fill in all required fields.</p>';
+                return;
+            }
+
+            checkBtn.disabled = true;
+            loading.style.display = 'block';
+            resultsSection.innerHTML = '';
+            errorMessage.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/range/check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        dailyCommute: parseFloat(dailyCommute),
+                        drivingType,
+                        homeCharger
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    errorMessage.innerHTML = '<p style="color: red;">' + (data.message || 'Something went wrong') + '</p>';
+                    return;
+                }
+
+                if (data.data.length === 0) {
+                    resultsSection.innerHTML = '<p>No vehicles found matching your criteria.</p>';
+                    return;
+                }
+
+                displayResults(data);
+
+            } catch (error) {
+                errorMessage.innerHTML = '<p style="color: red;">Failed to connect to server. Please try again.</p>';
+                console.error('Error:', error);
+            } finally {
+                checkBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+
+        function displayResults(data) {
+            const resultsSection = document.getElementById('resultsSection');
+            
+            let html = '<h2>Results (' + data.count + ' vehicles)</h2>';
+            
+            data.data.forEach(vehicle => {
+                html += '<hr>';
+                html += '<h3>' + vehicle.brand + ' ' + vehicle.name + ' (' + vehicle.category + ')</h3>';
+                html += '<p><strong>Status:</strong> ' + vehicle.status + ' ' + vehicle.suitability + '</p>';
+                html += '<p><strong>Price:</strong> $' + Number(vehicle.price).toLocaleString() + '</p>';
+                html += '<p><strong>EPA Range:</strong> ' + vehicle.range_km + ' km</p>';
+                html += '<p><strong>Winter Range:</strong> ' + vehicle.winter_range + ' km</p>';
+                html += '<p><strong>Fast Charging:</strong> ' + vehicle.fast_charging + '</p>';
+                html += '<p><strong>Battery:</strong> ' + (vehicle.battery_capacity || 'N/A') + ' kWh</p>';
+                html += '<p><strong>Charging Time:</strong> ' + (vehicle.charging_time || 'N/A') + '</p>';
+                html += '<p><strong>Recommendation:</strong> ' + vehicle.recommendation + '</p>';
+                html += '<p>' + vehicle.message + '</p>';
+            });
+            
+            resultsSection.innerHTML = html;
+        }
+    </script>
+
+</body>
+</html>

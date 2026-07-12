@@ -1,86 +1,34 @@
-const { promisePool } = require('../config/db');
+const db = require('../config/db');
 
-// Get all range data
-exports.getAllRanges = async (req, res) => {
+const getAllVehiclesWithRange = async (req, res) => {
     try {
-        const [rows] = await promisePool.query(`
-            SELECT vr.*, v.name, v.brand, v.category 
-            FROM vehicle_range vr
-            JOIN vehicles v ON vr.vehicle_id = v.id
+        const [vehicles] = await db.query(`
+            SELECT 
+                v.id,
+                v.brand,
+                v.name,
+                v.category,
+                v.price,
+                v.battery_capacity,
+                v.image_url,
+                v.description,
+                vr.range_km,
+                vr.city_range,
+                vr.highway_range,
+                vr.fast_charging,
+                vr.charging_time
+            FROM vehicles v
+            JOIN vehicle_range vr ON v.id = vr.vehicle_id
             ORDER BY vr.range_km DESC
         `);
-        
-        res.status(200).json({
-            success: true,
-            count: rows.length,
-            data: rows
-        });
-    } catch (error) {
-        console.error('Error fetching ranges:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch range data',
-            error: error.message
-        });
-    }
-};
-
-// Get range by vehicle ID
-exports.getRangeByVehicleId = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const [rows] = await promisePool.query(
-            'SELECT * FROM vehicle_range WHERE vehicle_id = ?',
-            [id]
-        );
-        
-        if (rows.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: `No range data found for vehicle ID: ${id}`
-            });
-        }
 
         res.status(200).json({
             success: true,
-            data: rows[0]
+            count: vehicles.length,
+            data: vehicles
         });
     } catch (error) {
-        console.error('Error fetching range:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch range data',
-            error: error.message
-        });
-    }
-};
-
-// Get vehicles with range above certain value
-exports.getVehiclesWithRangeAbove = async (req, res) => {
-    try {
-        const { minRange } = req.query;
-        if (!minRange) {
-            return res.status(400).json({
-                success: false,
-                message: 'Minimum range value is required'
-            });
-        }
-
-        const [rows] = await promisePool.query(`
-            SELECT vr.*, v.name, v.brand, v.category 
-            FROM vehicle_range vr
-            JOIN vehicles v ON vr.vehicle_id = v.id
-            WHERE vr.range_km >= ?
-            ORDER BY vr.range_km DESC
-        `, [parseInt(minRange)]);
-
-        res.status(200).json({
-            success: true,
-            count: rows.length,
-            data: rows
-        });
-    } catch (error) {
-        console.error('Error fetching vehicles with range above:', error);
+        console.error('Error fetching vehicles:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch vehicles',
@@ -89,36 +37,10 @@ exports.getVehiclesWithRangeAbove = async (req, res) => {
     }
 };
 
-// Get vehicles with fast charging
-exports.getVehiclesWithFastCharging = async (req, res) => {
+// ===== GET RANGE STATISTICS =====
+const getRangeStatistics = async (req, res) => {
     try {
-        const [rows] = await promisePool.query(`
-            SELECT vr.*, v.name, v.brand, v.category 
-            FROM vehicle_range vr
-            JOIN vehicles v ON vr.vehicle_id = v.id
-            WHERE vr.fast_charging = 'Yes'
-            ORDER BY vr.range_km DESC
-        `);
-
-        res.status(200).json({
-            success: true,
-            count: rows.length,
-            data: rows
-        });
-    } catch (error) {
-        console.error('Error fetching fast charging vehicles:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch fast charging vehicles',
-            error: error.message
-        });
-    }
-};
-
-// Get range statistics
-exports.getRangeStatistics = async (req, res) => {
-    try {
-        const [rows] = await promisePool.query(`
+        const [stats] = await db.query(`
             SELECT 
                 COUNT(*) as total_vehicles,
                 AVG(range_km) as avg_range,
@@ -130,147 +52,184 @@ exports.getRangeStatistics = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: rows[0]
+            data: stats[0]
         });
     } catch (error) {
-        console.error('Error fetching range statistics:', error);
+        console.error('Error fetching statistics:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to fetch range statistics',
+            message: 'Failed to fetch statistics',
             error: error.message
         });
     }
 };
 
-// Get top range vehicles
-exports.getTopRangeVehicles = async (req, res) => {
+// ===== GET TOP RANGE VEHICLES =====
+const getTopRangeVehicles = async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 5;
-        const [rows] = await promisePool.query(`
-            SELECT vr.*, v.name, v.brand, v.category, v.price
-            FROM vehicle_range vr
-            JOIN vehicles v ON vr.vehicle_id = v.id
+        const [vehicles] = await db.query(`
+            SELECT 
+                v.brand,
+                v.name,
+                v.category,
+                v.price,
+                vr.range_km,
+                vr.fast_charging
+            FROM vehicles v
+            JOIN vehicle_range vr ON v.id = vr.vehicle_id
             ORDER BY vr.range_km DESC
             LIMIT ?
         `, [limit]);
 
         res.status(200).json({
             success: true,
-            count: rows.length,
-            data: rows
+            count: vehicles.length,
+            data: vehicles
         });
     } catch (error) {
-        console.error('Error fetching top range vehicles:', error);
+        console.error('Error fetching top vehicles:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to fetch top range vehicles',
+            message: 'Failed to fetch top vehicles',
             error: error.message
         });
     }
 };
 
-// Search range with filters
-exports.searchRange = async (req, res) => {
+// ===== RANGE SUITABILITY CHECKER =====
+const checkRangeSuitability = async (req, res) => {
     try {
-        const { brand, minRange, maxRange, fastCharging, category } = req.query;
-        let query = `
-            SELECT vr.*, v.name, v.brand, v.category, v.price 
-            FROM vehicle_range vr
-            JOIN vehicles v ON vr.vehicle_id = v.id
-            WHERE 1=1
-        `;
-        const values = [];
+        const { dailyCommute, drivingType, homeCharger } = req.body;
 
-        if (brand) {
-            query += ' AND v.brand LIKE ?';
-            values.push(`%${brand}%`);
-        }
-
-        if (minRange) {
-            query += ' AND vr.range_km >= ?';
-            values.push(parseInt(minRange));
-        }
-
-        if (maxRange) {
-            query += ' AND vr.range_km <= ?';
-            values.push(parseInt(maxRange));
-        }
-
-        if (fastCharging) {
-            query += ' AND vr.fast_charging = ?';
-            values.push(fastCharging);
-        }
-
-        if (category) {
-            query += ' AND v.category = ?';
-            values.push(category);
-        }
-
-        query += ' ORDER BY vr.range_km DESC';
-
-        const [rows] = await promisePool.query(query, values);
-
-        res.status(200).json({
-            success: true,
-            count: rows.length,
-            data: rows
-        });
-    } catch (error) {
-        console.error('Error searching range:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to search range data',
-            error: error.message
-        });
-    }
-};
-
-// Update range data
-exports.updateRange = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { range_km, city_range, highway_range, fast_charging, charging_time } = req.body;
-
-        if (!range_km) {
+        if (!dailyCommute || !drivingType) {
             return res.status(400).json({
                 success: false,
-                message: 'Range (km) is required'
+                message: 'Daily commute and driving type are required'
             });
         }
 
-        // Check if vehicle exists
-        const [existing] = await promisePool.query(
-            'SELECT * FROM vehicle_range WHERE vehicle_id = ?',
-            [id]
-        );
+        const commuteKm = parseFloat(dailyCommute);
+        if (isNaN(commuteKm) || commuteKm <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please enter a valid daily commute distance'
+            });
+        }
 
-        if (existing.length === 0) {
+        const [vehicles] = await db.query(`
+            SELECT 
+                v.id,
+                v.brand,
+                v.name,
+                v.category,
+                v.price,
+                v.battery_capacity,
+                v.image_url,
+                v.description,
+                vr.range_km,
+                vr.city_range,
+                vr.highway_range,
+                vr.fast_charging,
+                vr.charging_time
+            FROM vehicles v
+            JOIN vehicle_range vr ON v.id = vr.vehicle_id
+            ORDER BY vr.range_km DESC
+        `);
+
+        if (vehicles.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: `No range data found for vehicle ID: ${id}`
+                message: 'No vehicles found in database'
             });
         }
 
-        const [result] = await promisePool.query(
-            `UPDATE vehicle_range 
-             SET range_km = ?, city_range = ?, highway_range = ?, 
-                 fast_charging = ?, charging_time = ?, updated_at = NOW()
-             WHERE vehicle_id = ?`,
-            [range_km, city_range || null, highway_range || null, 
-             fast_charging || 'No', charging_time || null, id]
-        );
+        let winterReduction = 0.30;
+        if (drivingType === 'City') winterReduction = 0.25;
+        else if (drivingType === 'Highway') winterReduction = 0.40;
+
+        const chargerBonus = (homeCharger === 'Yes') ? 0.05 : 0;
+
+        const results = vehicles.map(vehicle => {
+            let baseRange = vehicle.range_km;
+            if (drivingType === 'City' && vehicle.city_range) {
+                baseRange = vehicle.city_range;
+            } else if (drivingType === 'Highway' && vehicle.highway_range) {
+                baseRange = vehicle.highway_range;
+            }
+
+            const winterRange = Math.round(baseRange * (1 - winterReduction + chargerBonus));
+            
+            let suitability, status, message, recommendation;
+
+            if (winterRange >= commuteKm * 1.3) {
+                suitability = 'SUITABLE';
+                status = '✅';
+                message = 'This vehicle can handle your daily commute comfortably, even in winter conditions.';
+                recommendation = 'Highly recommended';
+            } else if (winterRange >= commuteKm) {
+                suitability = 'BORDERLINE';
+                status = '⚠️';
+                message = 'This vehicle might work for your commute, but you\'ll need to charge frequently, especially in winter.';
+                recommendation = 'Consider with caution';
+            } else {
+                suitability = 'NOT RECOMMENDED';
+                status = '❌';
+                message = 'This vehicle likely cannot handle your daily commute, especially in cold weather.';
+                recommendation = 'Not recommended for your needs';
+            }
+
+            return {
+                vehicle_id: vehicle.id,
+                brand: vehicle.brand,
+                name: vehicle.name,
+                category: vehicle.category,
+                price: vehicle.price,
+                battery_capacity: vehicle.battery_capacity,
+                image_url: vehicle.image_url || null,
+                description: vehicle.description || null,
+                range_km: vehicle.range_km,
+                city_range: vehicle.city_range,
+                highway_range: vehicle.highway_range,
+                winter_range: winterRange,
+                fast_charging: vehicle.fast_charging,
+                charging_time: vehicle.charging_time,
+                suitability,
+                status,
+                message,
+                recommendation
+            };
+        });
+
+        const sortedResults = results.sort((a, b) => {
+            const order = { 'SUITABLE': 1, 'BORDERLINE': 2, 'NOT RECOMMENDED': 3 };
+            return order[a.suitability] - order[b.suitability];
+        });
 
         res.status(200).json({
             success: true,
-            message: `Range data updated successfully for vehicle ID: ${id}`,
-            data: result
+            count: sortedResults.length,
+            user_inputs: {
+                daily_commute: commuteKm,
+                driving_type: drivingType,
+                home_charger: homeCharger || 'No'
+            },
+            data: sortedResults
         });
+
     } catch (error) {
-        console.error('Error updating range:', error);
+        console.error('Error checking range suitability:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to update range data',
+            message: 'Failed to check range suitability',
             error: error.message
         });
     }
+};
+
+module.exports = {
+    getAllVehiclesWithRange,
+    getRangeStatistics,
+    getTopRangeVehicles,
+    checkRangeSuitability
 };

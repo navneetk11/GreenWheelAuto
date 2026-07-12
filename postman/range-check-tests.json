@@ -1,0 +1,173 @@
+{
+  "info": {
+    "_postman_id": "e691c88e-723c-4da0-8237-4e0b219bcc64",
+    "name": "GreenWheel Auto",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56564978"
+  },
+  "item": [
+    {
+      "name": "Base-URL",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC05: Suitable Vehicle Returned",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"dailyCommute\": 50,\r\n    \"drivingType\": \"Mixed\",\r\n    \"homeCharger\": \"Yes\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/range/check",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "range",
+            "check"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC06: No Suitable Vehicle (600km)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"dailyCommute\": 600,\r\n    \"drivingType\": \"Highway\",\r\n    \"homeCharger\": \"No\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/range/check",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "range",
+            "check"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC07: Invalid Input (Empty Fields)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"dailyCommute\": 600,\r\n    \"drivingType\": \"Highway\",\r\n    \"homeCharger\": \"No\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/range/check",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "range",
+            "check"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC08: Zero Distance",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"dailyCommute\": 600,\r\n    \"drivingType\": \"Highway\",\r\n    \"homeCharger\": \"No\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/range/check",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "range",
+            "check"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
