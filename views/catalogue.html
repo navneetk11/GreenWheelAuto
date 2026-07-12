@@ -4,8 +4,17 @@
     <title>GreenWheel Auto - Vehicle Catalogue</title>
 </head>
 <body>
+    <body>
+    
+       
+         <div style="text-align:right; padding:10px;">
+            <span id="welcomeMsg"></span>
+            <button onclick="logout()">Logout</button>
+        </div>
+   
+    <hr>
     <h1>GreenWheel Auto — Vehicle Catalogue</h1>
-
+ 
     <h3>Filter</h3>
     Brand: <input type="text" id="brand" placeholder="e.g. Tesla"/>
     Shape: <input type="text" id="shape" placeholder="e.g. SUV"/>
@@ -103,5 +112,22 @@
 
         loadAllVehicles();
     </script>
+
+    <script>
+    // Show welcome message
+const user = JSON.parse(localStorage.getItem('user'));
+if (user) {
+    document.getElementById('welcomeMsg').textContent = 
+        `Welcome, ${user.fname}! `;
+}
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    alert('Logged out successfully!');
+    window.location.href = 'login.html';
+}
+</script>
+
 </body>
 </html>
