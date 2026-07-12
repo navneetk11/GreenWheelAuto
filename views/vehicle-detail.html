@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GreenWheel Auto - Vehicle Detail</title>
+</head>
+<body>
+    <a href="catalogue.html"><button>← Back to Catalogue</button></a>
+
+    <div id="vehicle-detail"></div>
+
+    <script>
+        const API = 'http://localhost:5000/api/vehicles';
+
+        // Get vehicle ID from URL
+        const params = new URLSearchParams(window.location.search);
+        const vid = params.get('vid');
+
+        async function loadVehicle() {
+            if (!vid) {
+                document.getElementById('vehicle-detail').innerHTML = 
+                    '<p>No vehicle selected.</p>';
+                return;
+            }
+
+            const res = await fetch(`${API}/${vid}`);
+            const v = await res.json();
+
+            document.getElementById('vehicle-detail').innerHTML = `
+                <h1>${v.brand} ${v.model} ${v.year}</h1>
+                <hr>
+                <p><strong>Brand:</strong> ${v.brand}</p>
+                <p><strong>Model:</strong> ${v.model}</p>
+                <p><strong>Year:</strong> ${v.year}</p>
+                <p><strong>Condition:</strong> ${v.condition_type}</p>
+                <p><strong>Price:</strong> $${v.price}</p>
+                <p><strong>Mileage:</strong> ${v.mileage} km</p>
+                <p><strong>Range (EPA):</strong> ${v.range_km} km</p>
+                <p><strong>Winter Range:</strong> ${v.range_winter_km} km</p>
+                <p><strong>Shape:</strong> ${v.shape}</p>
+                <p><strong>Drive Type:</strong> ${v.drive_type}</p>
+                <p><strong>Exterior Color:</strong> ${v.exterior_color}</p>
+                <p><strong>Interior Color:</strong> ${v.interior_color}</p>
+                <p><strong>Interior Fabric:</strong> ${v.interior_fabric}</p>
+                <p><strong>Charging Speed:</strong> ${v.charging_speed}</p>
+                <p><strong>Accident Reported:</strong> 
+                    ${v.accident_reported ? 'Yes' : 'None'}</p>
+                <hr>
+                <button onclick="addToCart('${v.vid}', '${v.brand} ${v.model}', ${v.price})">
+                    Add to Cart
+                </button>
+                <a href="range-checker.html">
+                    <button>Check Range Suitability</button>
+                </a>
+            `;
+        }
+
+        function addToCart(vid, name, price) {
+            // Store in localStorage temporarily
+            // Garima's cart route will handle actual cart
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first!');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            fetch('http://localhost:5000/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ vid, quantity: 1 })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || 'Added to cart!');
+            })
+            .catch(err => {
+                alert('Error adding to cart');
+            });
+        }
+
+        loadVehicle();
+    </script>
+</body>
+</html>
