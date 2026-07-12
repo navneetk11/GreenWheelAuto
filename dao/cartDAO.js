@@ -1,14 +1,19 @@
 // cartDAO.js
-// Database queries for cart, orders and payments
+// Database queries for cart, checkout and purchase orders
 
 const db = require('../config/db');
 
 async function getCartItemsByUser(userId) {
     const [rows] = await db.query(
-        `SELECT c.id AS cartItemId, c.vehicle_id, c.quantity,
-                v.make, v.model, v.price, v.stock
-         FROM cart_items c
-         JOIN vehicles v ON v.id = c.vehicle_id
+        `SELECT c.id AS cartItemId,
+                c.vid,
+                c.quantity,
+                i.brand,
+                i.model,
+                i.price,
+                i.quantity AS stock
+         FROM Cart c
+         JOIN Item i ON i.vid = c.vid
          WHERE c.user_id = ?`,
         [userId]
     );
@@ -17,7 +22,7 @@ async function getCartItemsByUser(userId) {
 
 async function findCartItem(userId, vehicleId) {
     const [rows] = await db.query(
-        'SELECT * FROM cart_items WHERE user_id = ? AND vehicle_id = ?',
+        'SELECT * FROM Cart WHERE user_id = ? AND vid = ?',
         [userId, vehicleId]
     );
     return rows[0];
@@ -29,97 +34,143 @@ async function addOrUpdateCartItem(userId, vehicleId, quantity) {
 
     if (existing) {
         await db.query(
-            'UPDATE cart_items SET quantity = quantity + ? WHERE id = ?',
+            'UPDATE Cart SET quantity = quantity + ? WHERE id = ?',
             [quantity, existing.id]
         );
         return { id: existing.id, updated: true };
     }
 
     const [result] = await db.query(
-        'INSERT INTO cart_items (user_id, vehicle_id, quantity) VALUES (?, ?, ?)',
+        'INSERT INTO Cart (user_id, vid, quantity) VALUES (?, ?, ?)',
         [userId, vehicleId, quantity]
     );
+
     return { id: result.insertId, updated: false };
 }
 
 async function updateCartItemQuantity(userId, cartItemId, quantity) {
     const [result] = await db.query(
-        'UPDATE cart_items SET quantity = ? WHERE id = ? AND user_id = ?',
+        'UPDATE Cart SET quantity = ? WHERE id = ? AND user_id = ?',
         [quantity, cartItemId, userId]
     );
+
     return result.affectedRows > 0;
 }
 
 async function removeCartItem(userId, cartItemId) {
     const [result] = await db.query(
-        'DELETE FROM cart_items WHERE id = ? AND user_id = ?',
+        'DELETE FROM Cart WHERE id = ? AND user_id = ?',
         [cartItemId, userId]
     );
+
     return result.affectedRows > 0;
 }
 
 async function clearCart(userId) {
-    await db.query('DELETE FROM cart_items WHERE user_id = ?', [userId]);
+    await db.query(
+        'DELETE FROM Cart WHERE user_id = ?',
+        [userId]
+    );
 }
 
 async function getVehicleById(vehicleId) {
     const [rows] = await db.query(
-        'SELECT * FROM vehicles WHERE id = ?', 
+        'SELECT * FROM Item WHERE vid = ?',
         [vehicleId]
     );
+
     return rows[0];
 }
 
-async function createOrder(userId, totalAmount) {
+// Save shipping address
+async function createAddress(userId, street, city, province, zip) {
     const [result] = await db.query(
-        `INSERT INTO orders (user_id, total_amount, status, payment_status)
-         VALUES (?, ?, 'pending', 'unpaid')`,
-        [userId, totalAmount]
+        `INSERT INTO Address
+        (user_id, street, city, province, zip)
+        VALUES (?, ?, ?, ?, ?)`,
+        [userId, street, city, province, zip]
     );
+
+    return result.insertId;
+}
+
+async function createOrder(userId, addressId, totalAmount) {
+
+    const [userRows] = await db.query(
+        'SELECT fname, lname FROM Users WHERE id = ?',
+        [userId]
+    );
+
+    const user = userRows[0];
+
+    const [result] = await db.query(
+        `INSERT INTO PO
+        (user_id, fname, lname, status, address_id, total_price)
+        VALUES (?, ?, ?, 'ORDERED', ?, ?)`,
+        [
+            userId,
+            user.fname,
+            user.lname,
+            addressId,
+            totalAmount
+        ]
+    );
+
     return result.insertId;
 }
 
 async function addOrderItem(orderId, vehicleId, quantity, price) {
     await db.query(
-        `INSERT INTO order_items (order_id, vehicle_id, quantity, price_at_purchase)
-         VALUES (?, ?, ?, ?)`,
-        [orderId, vehicleId, quantity, price]
+        `INSERT INTO POItem
+        (id, vid, price, quantity)
+        VALUES (?, ?, ?, ?)`,
+        [
+            orderId,
+            vehicleId,
+            price,
+            quantity
+        ]
     );
 }
 
 async function getOrderById(orderId, userId) {
     const [rows] = await db.query(
-        'SELECT * FROM orders WHERE id = ? AND user_id = ?',
+        'SELECT * FROM PO WHERE id = ? AND user_id = ?',
         [orderId, userId]
     );
+
     return rows[0];
 }
 
 async function getOrderItems(orderId) {
     const [rows] = await db.query(
-        `SELECT oi.*, v.make, v.model
-         FROM order_items oi
-         JOIN vehicles v ON v.id = oi.vehicle_id
-         WHERE oi.order_id = ?`,
+        `SELECT p.*,
+                i.brand,
+                i.model
+         FROM POItem p
+         JOIN Item i
+            ON p.vid = i.vid
+         WHERE p.id = ?`,
         [orderId]
     );
+
     return rows;
 }
 
-async function updateOrderStatus(orderId, status, paymentStatus) {
+async function updateOrderStatus(orderId, status) {
     await db.query(
-        'UPDATE orders SET status = ?, payment_status = ? WHERE id = ?',
-        [status, paymentStatus, orderId]
+        'UPDATE PO SET status = ? WHERE id = ?',
+        [status, orderId]
     );
 }
 
+// Temporary placeholder until controller is updated
+// Payment status is stored in PO.status using the 2/3 rule
 async function createPayment(orderId, amount, paymentMethod, status, transactionRef) {
-    const [result] = await db.query(
-        `INSERT INTO payments (order_id, amount, payment_method, status, transaction_ref)
-         VALUES (?, ?, ?, ?, ?)`,
-        [orderId, amount, paymentMethod, status, transactionRef]
-    );
-    return result.insertId;
+
+    await updateOrderStatus(orderId, status);
+
+    return orderId;
 }
 
 module.exports = {
@@ -130,6 +181,7 @@ module.exports = {
     removeCartItem,
     clearCart,
     getVehicleById,
+    createAddress,
     createOrder,
     addOrderItem,
     getOrderById,
