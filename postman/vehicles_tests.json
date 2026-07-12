@@ -1,0 +1,395 @@
+{
+  "info": {
+    "_postman_id": "59208cf7-d6b4-4177-a7c6-846aa012af1e",
+    "name": "GreenWheelAuto-Vehicle Routes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52761157",
+    "_collection_link": "https://go.postman.co/collection/52761157-59208cf7-d6b4-4177-a7c6-846aa012af1e?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Get All Vehicles",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/vehicles",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "vehicles"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get All Vehicles",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/vehicles",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "vehicles"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "4491"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"118b-Cqyk6tHZ8PoJiy58fgO4GzaXM+c\""
+            },
+            {
+              "key": "Date",
+              "value": "Sun, 12 Jul 2026 01:26:44 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "[\n    {\n        \"vid\": \"v001\",\n        \"name\": \"Tesla Model Y\",\n        \"description\": \"Mid-size AWD SUV with long range\",\n        \"brand\": \"Tesla\",\n        \"model\": \"Model Y\",\n        \"year\": 2023,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 67999,\n        \"quantity\": 10,\n        \"range_km\": 533,\n        \"range_winter_km\": 415,\n        \"exterior_color\": \"Midnight Silver\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Vegan Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 1,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v002\",\n        \"name\": \"Tesla Model 3\",\n        \"description\": \"Compact sedan with autopilot\",\n        \"brand\": \"Tesla\",\n        \"model\": \"Model 3\",\n        \"year\": 2023,\n        \"shape\": \"Sedan\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 54999,\n        \"quantity\": 8,\n        \"range_km\": 576,\n        \"range_winter_km\": 448,\n        \"exterior_color\": \"Pearl White\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Vegan Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"RWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v003\",\n        \"name\": \"BMW iX\",\n        \"description\": \"Luxury electric SUV\",\n        \"brand\": \"BMW\",\n        \"model\": \"iX xDrive50\",\n        \"year\": 2023,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 96000,\n        \"quantity\": 5,\n        \"range_km\": 630,\n        \"range_winter_km\": 490,\n        \"exterior_color\": \"Alpine White\",\n        \"interior_color\": \"Mocha\",\n        \"interior_fabric\": \"Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v004\",\n        \"name\": \"Hyundai IONIQ 6\",\n        \"description\": \"Streamlined long-range sedan\",\n        \"brand\": \"Hyundai\",\n        \"model\": \"IONIQ 6\",\n        \"year\": 2024,\n        \"shape\": \"Sedan\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 54000,\n        \"quantity\": 8,\n        \"range_km\": 581,\n        \"range_winter_km\": 450,\n        \"exterior_color\": \"Gravity Gold\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Cloth\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"RWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 1,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v005\",\n        \"name\": \"Porsche Taycan\",\n        \"description\": \"High performance luxury EV\",\n        \"brand\": \"Porsche\",\n        \"model\": \"Taycan\",\n        \"year\": 2023,\n        \"shape\": \"Sedan\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 133000,\n        \"quantity\": 4,\n        \"range_km\": 484,\n        \"range_winter_km\": 370,\n        \"exterior_color\": \"Frozen Blue\",\n        \"interior_color\": \"Cognac\",\n        \"interior_fabric\": \"Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v006\",\n        \"name\": \"Rivian R1T\",\n        \"description\": \"Electric adventure truck\",\n        \"brand\": \"Rivian\",\n        \"model\": \"R1T\",\n        \"year\": 2022,\n        \"shape\": \"Truck\",\n        \"condition_type\": \"Used\",\n        \"mileage\": 18000,\n        \"price\": 72000,\n        \"quantity\": 3,\n        \"range_km\": 505,\n        \"range_winter_km\": 390,\n        \"exterior_color\": \"Forest Green\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Vegan Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 1,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v007\",\n        \"name\": \"Ford Mustang Mach-E\",\n        \"description\": \"Electric muscle SUV\",\n        \"brand\": \"Ford\",\n        \"model\": \"Mustang Mach-E\",\n        \"year\": 2023,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 58000,\n        \"quantity\": 6,\n        \"range_km\": 490,\n        \"range_winter_km\": 375,\n        \"exterior_color\": \"Rapid Red\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Cloth\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 1,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v008\",\n        \"name\": \"Chevrolet Equinox EV\",\n        \"description\": \"Affordable family SUV\",\n        \"brand\": \"Chevrolet\",\n        \"model\": \"Equinox EV\",\n        \"year\": 2024,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 43000,\n        \"quantity\": 12,\n        \"range_km\": 483,\n        \"range_winter_km\": 370,\n        \"exterior_color\": \"Summit White\",\n        \"interior_color\": \"Gray\",\n        \"interior_fabric\": \"Cloth\",\n        \"charging_speed\": \"Standard\",\n        \"drive_type\": \"FWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v009\",\n        \"name\": \"Audi Q8 e-tron\",\n        \"description\": \"Premium electric SUV\",\n        \"brand\": \"Audi\",\n        \"model\": \"Q8 e-tron\",\n        \"year\": 2023,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 89000,\n        \"quantity\": 4,\n        \"range_km\": 582,\n        \"range_winter_km\": 450,\n        \"exterior_color\": \"Glacier White\",\n        \"interior_color\": \"Brown\",\n        \"interior_fabric\": \"Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v010\",\n        \"name\": \"Nissan Ariya\",\n        \"description\": \"Stylish crossover EV\",\n        \"brand\": \"Nissan\",\n        \"model\": \"Ariya\",\n        \"year\": 2023,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 47000,\n        \"quantity\": 7,\n        \"range_km\": 402,\n        \"range_winter_km\": 310,\n        \"exterior_color\": \"Warm Silver\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Cloth\",\n        \"charging_speed\": \"Standard\",\n        \"drive_type\": \"FWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    }\n]"
+        }
+      ]
+    },
+    {
+      "name": "Filter Vehicles",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/vehicles/filter?brand=Tesla",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "vehicles",
+            "filter"
+          ],
+          "query": [
+            {
+              "key": "brand",
+              "value": "Tesla"
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Filter Vehicles",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/vehicles/filter?brand=Tesla",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "vehicles",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "brand",
+                  "value": "Tesla"
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "918"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"396-WAGp/GvpcrdnhTOtHRyPkRdkdNc\""
+            },
+            {
+              "key": "Date",
+              "value": "Sun, 12 Jul 2026 01:27:55 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "[\n    {\n        \"vid\": \"v001\",\n        \"name\": \"Tesla Model Y\",\n        \"description\": \"Mid-size AWD SUV with long range\",\n        \"brand\": \"Tesla\",\n        \"model\": \"Model Y\",\n        \"year\": 2023,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 67999,\n        \"quantity\": 10,\n        \"range_km\": 533,\n        \"range_winter_km\": 415,\n        \"exterior_color\": \"Midnight Silver\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Vegan Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 1,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v002\",\n        \"name\": \"Tesla Model 3\",\n        \"description\": \"Compact sedan with autopilot\",\n        \"brand\": \"Tesla\",\n        \"model\": \"Model 3\",\n        \"year\": 2023,\n        \"shape\": \"Sedan\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 54999,\n        \"quantity\": 8,\n        \"range_km\": 576,\n        \"range_winter_km\": 448,\n        \"exterior_color\": \"Pearl White\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Vegan Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"RWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    }\n]"
+        }
+      ]
+    },
+    {
+      "name": "Sort Vehicles",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/vehicles/filter?sortBy=price&sortOrder=asc",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "vehicles",
+            "filter"
+          ],
+          "query": [
+            {
+              "key": "sortBy",
+              "value": "price"
+            },
+            {
+              "key": "sortOrder",
+              "value": "asc"
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Sort Vehicles",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/vehicles/filter?sortBy=price&sortOrder=asc",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "vehicles",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "price"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc"
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "4491"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"118b-EXhSzYDMFgVoV37ucs0aP19K3TA\""
+            },
+            {
+              "key": "Date",
+              "value": "Sun, 12 Jul 2026 01:29:13 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "[\n    {\n        \"vid\": \"v008\",\n        \"name\": \"Chevrolet Equinox EV\",\n        \"description\": \"Affordable family SUV\",\n        \"brand\": \"Chevrolet\",\n        \"model\": \"Equinox EV\",\n        \"year\": 2024,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 43000,\n        \"quantity\": 12,\n        \"range_km\": 483,\n        \"range_winter_km\": 370,\n        \"exterior_color\": \"Summit White\",\n        \"interior_color\": \"Gray\",\n        \"interior_fabric\": \"Cloth\",\n        \"charging_speed\": \"Standard\",\n        \"drive_type\": \"FWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v010\",\n        \"name\": \"Nissan Ariya\",\n        \"description\": \"Stylish crossover EV\",\n        \"brand\": \"Nissan\",\n        \"model\": \"Ariya\",\n        \"year\": 2023,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 47000,\n        \"quantity\": 7,\n        \"range_km\": 402,\n        \"range_winter_km\": 310,\n        \"exterior_color\": \"Warm Silver\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Cloth\",\n        \"charging_speed\": \"Standard\",\n        \"drive_type\": \"FWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v004\",\n        \"name\": \"Hyundai IONIQ 6\",\n        \"description\": \"Streamlined long-range sedan\",\n        \"brand\": \"Hyundai\",\n        \"model\": \"IONIQ 6\",\n        \"year\": 2024,\n        \"shape\": \"Sedan\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 54000,\n        \"quantity\": 8,\n        \"range_km\": 581,\n        \"range_winter_km\": 450,\n        \"exterior_color\": \"Gravity Gold\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Cloth\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"RWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 1,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v002\",\n        \"name\": \"Tesla Model 3\",\n        \"description\": \"Compact sedan with autopilot\",\n        \"brand\": \"Tesla\",\n        \"model\": \"Model 3\",\n        \"year\": 2023,\n        \"shape\": \"Sedan\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 54999,\n        \"quantity\": 8,\n        \"range_km\": 576,\n        \"range_winter_km\": 448,\n        \"exterior_color\": \"Pearl White\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Vegan Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"RWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v007\",\n        \"name\": \"Ford Mustang Mach-E\",\n        \"description\": \"Electric muscle SUV\",\n        \"brand\": \"Ford\",\n        \"model\": \"Mustang Mach-E\",\n        \"year\": 2023,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 58000,\n        \"quantity\": 6,\n        \"range_km\": 490,\n        \"range_winter_km\": 375,\n        \"exterior_color\": \"Rapid Red\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Cloth\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 1,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v001\",\n        \"name\": \"Tesla Model Y\",\n        \"description\": \"Mid-size AWD SUV with long range\",\n        \"brand\": \"Tesla\",\n        \"model\": \"Model Y\",\n        \"year\": 2023,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 67999,\n        \"quantity\": 10,\n        \"range_km\": 533,\n        \"range_winter_km\": 415,\n        \"exterior_color\": \"Midnight Silver\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Vegan Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 1,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v006\",\n        \"name\": \"Rivian R1T\",\n        \"description\": \"Electric adventure truck\",\n        \"brand\": \"Rivian\",\n        \"model\": \"R1T\",\n        \"year\": 2022,\n        \"shape\": \"Truck\",\n        \"condition_type\": \"Used\",\n        \"mileage\": 18000,\n        \"price\": 72000,\n        \"quantity\": 3,\n        \"range_km\": 505,\n        \"range_winter_km\": 390,\n        \"exterior_color\": \"Forest Green\",\n        \"interior_color\": \"Black\",\n        \"interior_fabric\": \"Vegan Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 1,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v009\",\n        \"name\": \"Audi Q8 e-tron\",\n        \"description\": \"Premium electric SUV\",\n        \"brand\": \"Audi\",\n        \"model\": \"Q8 e-tron\",\n        \"year\": 2023,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 89000,\n        \"quantity\": 4,\n        \"range_km\": 582,\n        \"range_winter_km\": 450,\n        \"exterior_color\": \"Glacier White\",\n        \"interior_color\": \"Brown\",\n        \"interior_fabric\": \"Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v003\",\n        \"name\": \"BMW iX\",\n        \"description\": \"Luxury electric SUV\",\n        \"brand\": \"BMW\",\n        \"model\": \"iX xDrive50\",\n        \"year\": 2023,\n        \"shape\": \"SUV\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 96000,\n        \"quantity\": 5,\n        \"range_km\": 630,\n        \"range_winter_km\": 490,\n        \"exterior_color\": \"Alpine White\",\n        \"interior_color\": \"Mocha\",\n        \"interior_fabric\": \"Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    },\n    {\n        \"vid\": \"v005\",\n        \"name\": \"Porsche Taycan\",\n        \"description\": \"High performance luxury EV\",\n        \"brand\": \"Porsche\",\n        \"model\": \"Taycan\",\n        \"year\": 2023,\n        \"shape\": \"Sedan\",\n        \"condition_type\": \"New\",\n        \"mileage\": 0,\n        \"price\": 133000,\n        \"quantity\": 4,\n        \"range_km\": 484,\n        \"range_winter_km\": 370,\n        \"exterior_color\": \"Frozen Blue\",\n        \"interior_color\": \"Cognac\",\n        \"interior_fabric\": \"Leather\",\n        \"charging_speed\": \"Fast\",\n        \"drive_type\": \"AWD\",\n        \"has_history_report\": 0,\n        \"accident_reported\": 0,\n        \"is_hot_deal\": 0,\n        \"image_url\": null\n    }\n]"
+        }
+      ]
+    },
+    {
+      "name": "Vehicle Detail",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/vehicles/v001",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "api",
+            "vehicles",
+            "v001"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Vehicle Detail",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/vehicles/v001",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "vehicles",
+                "v001"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "461"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"1cd-qWhEwZRNEYORvFo0gWbZ0R1aGOM\""
+            },
+            {
+              "key": "Date",
+              "value": "Sun, 12 Jul 2026 01:29:43 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"vid\": \"v001\",\n    \"name\": \"Tesla Model Y\",\n    \"description\": \"Mid-size AWD SUV with long range\",\n    \"brand\": \"Tesla\",\n    \"model\": \"Model Y\",\n    \"year\": 2023,\n    \"shape\": \"SUV\",\n    \"condition_type\": \"New\",\n    \"mileage\": 0,\n    \"price\": 67999,\n    \"quantity\": 10,\n    \"range_km\": 533,\n    \"range_winter_km\": 415,\n    \"exterior_color\": \"Midnight Silver\",\n    \"interior_color\": \"Black\",\n    \"interior_fabric\": \"Vegan Leather\",\n    \"charging_speed\": \"Fast\",\n    \"drive_type\": \"AWD\",\n    \"has_history_report\": 0,\n    \"accident_reported\": 0,\n    \"is_hot_deal\": 1,\n    \"image_url\": null\n}"
+        }
+      ]
+    }
+  ]
+}
