@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GreenWheel Auto - Vehicle Catalogue</title>
+</head>
+<body>
+    <h1>GreenWheel Auto — Vehicle Catalogue</h1>
+
+    <h3>Filter</h3>
+    Brand: <input type="text" id="brand" placeholder="e.g. Tesla"/>
+    Shape: <input type="text" id="shape" placeholder="e.g. SUV"/>
+    Year:  <input type="text" id="year"  placeholder="e.g. 2023"/>
+    Accident Reported:
+    <select id="accident">
+        <option value="">Any</option>
+        <option value="false">No Accidents</option>
+        <option value="true">Has Accidents</option>
+    </select>
+    <button onclick="applyFilter()">Apply Filter</button>
+
+    <h3>Sort</h3>
+    Sort By:
+    <select id="sortBy">
+        <option value="price">Price</option>
+        <option value="mileage">Mileage</option>
+        <option value="year">Year</option>
+    </select>
+    Order:
+    <select id="sortOrder">
+        <option value="asc">Low to High</option>
+        <option value="desc">High to Low</option>
+    </select>
+    <button onclick="applySort()">Apply Sort</button>
+    <button onclick="loadAllVehicles()">Show All Vehicles</button>
+
+    <hr>
+    <div id="vehicles"></div>
+
+    <script>
+        const API = 'http://localhost:5000/api/vehicles';
+
+        let currentFilters = {
+            brand: '', shape: '', year: '', accident: '',
+            sortBy: 'price', sortOrder: 'asc'
+        };
+
+        function displayVehicles(data) {
+            const container = document.getElementById('vehicles');
+            if (data.length === 0) {
+                container.innerHTML = '<p>No vehicles found.</p>';
+                return;
+            }
+            container.innerHTML = data.map(v => `
+                <div style="border:1px solid black; margin:10px; padding:10px;">
+                    <h3>${v.brand} ${v.model} ${v.year}</h3>
+                    <p>${v.shape} | ${v.condition_type} | Range: ${v.range_km}km</p>
+                    <p>Price: $${v.price}</p>
+                    <a href="vehicle-detail.html?vid=${v.vid}">
+                        <button>View Details</button>
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        async function fetchVehicles() {
+            let url = `${API}/filter?`;
+            if (currentFilters.brand)    url += `brand=${currentFilters.brand}&`;
+            if (currentFilters.shape)    url += `shape=${currentFilters.shape}&`;
+            if (currentFilters.year)     url += `year=${currentFilters.year}&`;
+            if (currentFilters.accident) url += `accident_reported=${currentFilters.accident}&`;
+            url += `sortBy=${currentFilters.sortBy}&sortOrder=${currentFilters.sortOrder}`;
+
+            const res = await fetch(url);
+            const data = await res.json();
+            displayVehicles(data);
+        }
+
+        async function applyFilter() {
+            currentFilters.brand    = document.getElementById('brand').value;
+            currentFilters.shape    = document.getElementById('shape').value;
+            currentFilters.year     = document.getElementById('year').value;
+            currentFilters.accident = document.getElementById('accident').value;
+            await fetchVehicles();
+        }
+
+        async function applySort() {
+            currentFilters.sortBy    = document.getElementById('sortBy').value;
+            currentFilters.sortOrder = document.getElementById('sortOrder').value;
+            await fetchVehicles();
+        }
+
+        async function loadAllVehicles() {
+            currentFilters = {
+                brand: '', shape: '', year: '', accident: '',
+                sortBy: 'price', sortOrder: 'asc'
+            };
+            document.getElementById('brand').value    = '';
+            document.getElementById('shape').value    = '';
+            document.getElementById('year').value     = '';
+            document.getElementById('accident').value = '';
+            await fetchVehicles();
+        }
+
+        loadAllVehicles();
+    </script>
+</body>
+</html>
