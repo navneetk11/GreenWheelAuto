@@ -34,6 +34,13 @@ npm install
 ### 2. Create .env File
 Copy `.env.example` and rename to `.env`:
 
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=your_mysql_root_password
+DB_NAME=greenwheeldb
+JWT_SECRET=greenwheelautosecret123
+PORT=5000
+
 ### 3. Set Up Database
 - Install MySQL and open MySQL Workbench
 - Connect using root/root123
