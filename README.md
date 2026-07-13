@@ -38,7 +38,7 @@ Copy `.env.example` and rename to `.env`:
 - Install MySQL and open MySQL Workbench
 - Connect using root/root123
 - Go to File → Open SQL Script → select `database/schema.sql`
-- Click ⚡ to run — this creates all tables and inserts sample data
+- Click lightning icon to run — this creates all tables and inserts sample data
 
 ### 4. Start the Server
 ```bash
@@ -100,10 +100,10 @@ GET  /api/range/top           — Top range vehicles
 
 ## Payment System
 The payment service mimics real payment processing:
-- Request 1 → ✅ APPROVED
-- Request 2 → ✅ APPROVED  
-- Request 3 → ❌ DENIED
-- Request 4 → ✅ APPROVED (cycle repeats)
+- Request 1 →  APPROVED
+- Request 2 →  APPROVED  
+- Request 3 →  DENIED
+- Request 4 →  APPROVED (cycle repeats)
 
 ---
 
@@ -127,9 +127,9 @@ To run:
 
 ## Original Use Case — EV Range Suitability Checker (UC16)
 Enter your daily commute distance, driving type, and Canadian postal code. The system calculates the realistic winter range for each vehicle and classifies them as:
-- ✅ SUITABLE — vehicle comfortably covers your commute
-- ⚠️ BORDERLINE — vehicle might work but needs frequent charging
-- ❌ NOT RECOMMENDED — vehicle cannot reliably cover your commute
+-  SUITABLE — vehicle comfortably covers your commute
+-  BORDERLINE — vehicle might work but needs frequent charging
+-  NOT RECOMMENDED — vehicle cannot reliably cover your commute
 
 Winter range reduction is applied based on driving type:
 - City driving: 25% reduction
@@ -137,39 +137,6 @@ Winter range reduction is applied based on driving type:
 - Highway driving: 40% reduction
 
 Home charger bonus: +5% range if customer has home charger
-
----
-
-## Project Structure
-GreenWheelAuto/
-├── server.js              — Express server entry point
-├── config/db.js           — MySQL database connection
-├── routes/                — API route definitions
-│   ├── vehicleRoutes.js
-│   ├── authRoutes.js
-│   ├── cartRoutes.js
-│   └── rangeRoutes.js
-├── controllers/           — Business logic
-│   ├── vehicleController.js
-│   ├── authController.js
-│   ├── cartController.js
-│   └── rangeController.js
-├── dao/
-│   └── cartDAO.js         — Database queries for cart
-├── middleware/
-│   └── authMiddleware.js  — JWT token verification
-├── views/                 — HTML pages (no CSS)
-│   ├── register.html
-│   ├── login.html
-│   ├── catalogue.html
-│   ├── vehicle-detail.html
-│   ├── cart.html
-│   ├── checkout.html
-│   └── range-checker.html
-├── postman/               — Postman test collections
-├── database/
-│   └── schema.sql         — Database schema + sample data
-└── .env.example           — Environment variables template
 
 ---
 
