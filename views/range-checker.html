@@ -105,26 +105,26 @@
         });
 
         function displayResults(data) {
-            const resultsSection = document.getElementById('resultsSection');
-            
-            let html = '<h2>Results (' + data.count + ' vehicles)</h2>';
-            
-            data.data.forEach(vehicle => {
-                html += '<hr>';
-                html += '<h3>' + vehicle.brand + ' ' + vehicle.name + ' (' + vehicle.category + ')</h3>';
-                html += '<p><strong>Status:</strong> ' + vehicle.status + ' ' + vehicle.suitability + '</p>';
-                html += '<p><strong>Price:</strong> $' + Number(vehicle.price).toLocaleString() + '</p>';
-                html += '<p><strong>EPA Range:</strong> ' + vehicle.range_km + ' km</p>';
-                html += '<p><strong>Winter Range:</strong> ' + vehicle.winter_range + ' km</p>';
-                html += '<p><strong>Fast Charging:</strong> ' + vehicle.fast_charging + '</p>';
-                html += '<p><strong>Battery:</strong> ' + (vehicle.battery_capacity || 'N/A') + ' kWh</p>';
-                html += '<p><strong>Charging Time:</strong> ' + (vehicle.charging_time || 'N/A') + '</p>';
-                html += '<p><strong>Recommendation:</strong> ' + vehicle.recommendation + '</p>';
-                html += '<p>' + vehicle.message + '</p>';
-            });
-            
-            resultsSection.innerHTML = html;
-        }
+    const resultsSection = document.getElementById('resultsSection');
+    
+    let html = '<h2>Results (' + data.count + ' vehicles)</h2>';
+    html += '<p>Your daily commute: ' + data.user_inputs.daily_commute + 'km | ' + data.user_inputs.driving_type + ' driving</p>';
+    
+    data.data.forEach(vehicle => {
+        html += '<hr>';
+        html += '<h3>[' + vehicle.suitability + '] ' + vehicle.brand + ' ' + vehicle.model + '</h3>';
+        html += '<p><strong>Suitability:</strong> ' + vehicle.suitability + '</p>';
+        html += '<p><strong>Price:</strong> $' + Number(vehicle.price).toLocaleString() + '</p>';
+        html += '<p><strong>EPA Range:</strong> ' + vehicle.range_km + ' km</p>';
+        html += '<p><strong>Winter Range:</strong> ' + vehicle.winter_range + ' km</p>';
+        html += '<p><strong>Charging Speed:</strong> ' + vehicle.charging_speed + '</p>';
+        html += '<p><strong>Recommendation:</strong> ' + vehicle.recommendation + '</p>';
+        html += '<p>' + vehicle.message + '</p>';
+        html += '<a href="vehicle-detail.html?vid=' + vehicle.vid + '"><button>View Details</button></a>';
+    });
+    
+    resultsSection.innerHTML = html;
+}
     </script>
 
 </body>
