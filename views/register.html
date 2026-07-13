@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GreenWheel Auto - Create Account</title>
+</head>
+<body>
+    <h1>GreenWheel Auto — Create Account</h1>
+    <hr>
+
+    First Name: <input type="text" id="fname" placeholder="Jane"/><br><br>
+    Last Name:  <input type="text" id="lname" placeholder="Doe"/><br><br>
+    Email:      <input type="email" id="email" placeholder="jane@example.com"/><br><br>
+    Password:   <input type="password" id="password"/><br><br>
+    Address:    <input type="text" id="address" placeholder="123 Main St, Toronto, ON"/><br><br>
+
+    <button onclick="registerUser()">Register</button>
+    <p id="message"></p>
+
+    <hr>
+    <p>Already have an account? <a href="login.html">Login here</a></p>
+
+    <script>
+        const API = 'http://localhost:5000/api/auth';
+
+        async function registerUser() {
+            const fname    = document.getElementById('fname').value;
+            const lname    = document.getElementById('lname').value;
+            const email    = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const address  = document.getElementById('address').value;
+            const messageEl = document.getElementById('message');
+
+            if (!fname || !lname || !email || !password) {
+                messageEl.textContent = 'Please fill in all required fields.';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fname, lname, email, password, address })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Success -> redirect to Login page
+                    window.location.href = 'login.html';
+                } else {
+                    messageEl.textContent = data.message || 'Registration failed.';
+                }
+            } catch (err) {
+                messageEl.textContent = 'Error connecting to server.';
+            }
+        }
+    </script>
+</body>
+</html>

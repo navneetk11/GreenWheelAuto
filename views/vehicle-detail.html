@@ -4,6 +4,10 @@
     <title>GreenWheel Auto - Vehicle Detail</title>
 </head>
 <body>
+   
+    <div style="text-align:right; padding:10px;">
+        <button onclick="logout()">Logout</button>
+    </div>
     <a href="catalogue.html"><button>← Back to Catalogue</button></a>
 
     <div id="vehicle-detail"></div>
@@ -84,4 +88,12 @@
         loadVehicle();
     </script>
 </body>
+<script>
+    function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    alert('Logged out successfully!');
+    window.location.href = 'login.html';
+}
+</script>
 </html>
