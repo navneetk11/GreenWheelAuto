@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenWheel Auto - Checkout</title>
+</head>
+
+<body>
+
+    <h1>Checkout</h1>
+
+    <p>Please review your information below to complete your purchase.</p>
+
+    <form id="checkoutForm">
+
+        <h2>Shipping Information</h2>
+
+        <label for="street">Street Address</label><br>
+        <input type="text" id="street" required><br><br>
+
+        <label for="city">City</label><br>
+        <input type="text" id="city" required><br><br>
+
+        <label for="province">Province</label><br>
+        <input type="text" id="province" required><br><br>
+
+        <label for="zip">Postal Code</label><br>
+        <input type="text" id="zip" required><br><br>
+
+        <h2>Payment Information</h2>
+
+        <label for="cardNumber">Card Number</label><br>
+        <input type="text" id="cardNumber" required><br><br>
+
+        <label for="expiry">Expiry Date (MM/YY)</label><br>
+        <input type="text" id="expiry" placeholder="MM/YY" required><br><br>
+
+        <label for="cvv">CVV</label><br>
+        <input type="text" id="cvv" required><br><br>
+
+        <button type="submit">Place Order</button>
+
+    </form>
+
+    <p id="resultMessage"></p>
+
+    <script>
+
+        function getToken() {
+            return localStorage.getItem('token');
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', async function (e) {
+
+            e.preventDefault();
+
+            const token = getToken();
+
+            if (!token) {
+                document.getElementById('resultMessage').textContent =
+                    'Please log in before checking out.';
+                return;
+            }
+
+            const body = {
+                street: document.getElementById('street').value,
+                city: document.getElementById('city').value,
+                province: document.getElementById('province').value,
+                zip: document.getElementById('zip').value,
+                cardNumber: document.getElementById('cardNumber').value,
+                expiry: document.getElementById('expiry').value,
+                cvv: document.getElementById('cvv').value
+            };
+
+            try {
+
+                const res = await fetch('/api/cart/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    document.getElementById('resultMessage').textContent =
+                        data.error || 'Checkout could not be completed.';
+                    return;
+                }
+
+                document.getElementById('resultMessage').textContent =
+                    data.message;
+
+                document.getElementById('checkoutForm').style.display = 'none';
+
+            } catch (err) {
+
+                console.log(err);
+
+                document.getElementById('resultMessage').textContent =
+                    'Something went wrong while processing your order. Please try again.';
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

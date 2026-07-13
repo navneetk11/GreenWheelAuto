@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart | GreenWheel Auto</title>
+</head>
+
+<body>
+
+<header>
+    <h1>Your Shopping Cart</h1>
+    <p>
+        Review your selected vehicles before continuing to checkout.
+    </p>
+</header>
+
+<div id="statusMessage"></div>
+
+<main>
+    <div id="cartContainer">
+        <p>Loading your cart...</p>
+    </div>
+</main>
+
+<section>
+
+    <h2>Order Total</h2>
+    <p id="cartTotal">$0.00</p>
+
+    <button
+        type="button"
+        onclick="window.location.href='catalogue.html'">
+        Continue Shopping
+    </button>
+
+    <button
+        type="button"
+        id="checkoutButton"
+        onclick="goToCheckout()"
+        disabled>
+        Proceed to Checkout
+    </button>
+
+</section>
+
+<script>
+
+function getToken() {
+    return localStorage.getItem('token');
+}
+
+function formatCurrency(value) {
+    return Number(value).toLocaleString('en-CA', {
+        style: 'currency',
+        currency: 'CAD'
+    });
+}
+
+function showMessage(message) {
+    document.getElementById('statusMessage').textContent = message;
+}
+
+function clearMessage() {
+    document.getElementById('statusMessage').textContent = '';
+}
+
+async function loadCart() {
+
+    const token = getToken();
+    const container = document.getElementById('cartContainer');
+    const checkoutButton = document.getElementById('checkoutButton');
+
+    clearMessage();
+
+    if (!token) {
+
+        container.innerHTML = `
+            <p>Please sign in to view your shopping cart.</p>
+        `;
+
+        checkoutButton.disabled = true;
+        return;
+    }
+
+    container.innerHTML = '<p>Loading your cart...</p>';
+
+    try {
+
+        const response = await fetch('/api/cart', {
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Your cart could not be loaded.');
+        }
+
+        renderCart(data.items, data.total);
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <p>We could not load your cart.</p>
+        `;
+
+        document.getElementById('cartTotal').textContent = '$0.00';
+        checkoutButton.disabled = true;
+
+        showMessage('Something went wrong while loading your cart. Please try again.');
+    }
+}
+
+function renderCart(items, total) {
+
+    const container = document.getElementById('cartContainer');
+    const checkoutButton = document.getElementById('checkoutButton');
+
+    if (!items || items.length === 0) {
+
+        container.innerHTML = `
+            <h2>Your cart is empty</h2>
+            <p>Browse our vehicle catalogue to find a vehicle.</p>
+        `;
+
+        document.getElementById('cartTotal').textContent = '$0.00';
+        checkoutButton.disabled = true;
+        return;
+    }
+
+    let cartHtml = '';
+
+    for (const item of items) {
+
+        const vehicleName =
+            (item.brand || item.make || 'Vehicle') +
+            ' ' +
+            (item.model || '');
+
+        cartHtml += `
+            <hr>
+
+            <h3>${vehicleName}</h3>
+
+            <p>Price: ${formatCurrency(item.price)}</p>
+
+            <p>Quantity: ${item.quantity}</p>
+
+            <p>
+                Item Total:
+                ${formatCurrency(Number(item.price) * Number(item.quantity))}
+            </p>
+
+            <button
+                type="button"
+                onclick="changeQuantity(${item.cartItemId}, ${item.quantity - 1})"
+                ${item.quantity <= 1 ? 'disabled' : ''}>
+                -
+            </button>
+
+            <button
+                type="button"
+                onclick="changeQuantity(${item.cartItemId}, ${item.quantity + 1})">
+                +
+            </button>
+
+            <button
+                type="button"
+                onclick="removeItem(${item.cartItemId})">
+                Remove from Cart
+            </button>
+        `;
+    }
+
+    container.innerHTML = cartHtml;
+    document.getElementById('cartTotal').textContent =
+        formatCurrency(total);
+
+    checkoutButton.disabled = false;
+}
+
+async function changeQuantity(cartItemId, quantity) {
+
+    if (quantity < 1) {
+        return;
+    }
+
+    const token = getToken();
+
+    try {
+
+        const response = await fetch('/api/cart/' + cartItemId, {
+            method: 'PUT',
+            headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ quantity })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'The quantity could not be updated.');
+        }
+
+        showMessage('Cart quantity updated.');
+        await loadCart();
+
+    } catch (error) {
+
+        console.error(error);
+        showMessage(error.message);
+
+    }
+}
+
+async function removeItem(cartItemId) {
+
+    const shouldRemove = window.confirm(
+        'Remove this vehicle from your cart?'
+    );
+
+    if (!shouldRemove) {
+        return;
+    }
+
+    const token = getToken();
+
+    try {
+
+        const response = await fetch('/api/cart/' + cartItemId, {
+            method: 'DELETE',
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'The item could not be removed.');
+        }
+
+        showMessage('The vehicle was removed from your cart.');
+        await loadCart();
+
+    } catch (error) {
+
+        console.error(error);
+        showMessage(error.message);
+
+    }
+}
+
+function goToCheckout() {
+    window.location.href = 'checkout.html';
+}
+
+loadCart();
+
+</script>
+
+</body>
+
+</html>
