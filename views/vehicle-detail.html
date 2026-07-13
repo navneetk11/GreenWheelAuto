@@ -59,31 +59,41 @@
         }
 
         function addToCart(vid, name, price) {
-            // Store in localStorage temporarily
-            // Garima's cart route will handle actual cart
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('Please login first!');
-                window.location.href = 'login.html';
-                return;
-            }
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('Please login first!');
+        window.location.href = 'login.html';
+        return;
+    }
 
-            fetch('http://localhost:5000/api/cart/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ vid, quantity: 1 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert(data.message || 'Added to cart!');
-            })
-            .catch(err => {
-                alert('Error adding to cart');
-            });
-        }
+    fetch('http://localhost:5000/api/cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ vehicleId: vid, quantity: 1 })
+    })
+    .then(res => res.json())
+    .then(data => {
+        // Show inline message instead of alert
+        const msg = document.createElement('div');
+        msg.innerHTML = `
+            <p> ${name} added to cart!</p>
+            <button onclick="window.location.href='cart.html'">
+                View Cart
+            </button>
+            <button onclick="window.location.href='catalogue.html'">
+                Continue Shopping
+            </button>
+        `;
+        document.body.insertBefore(msg, document.body.firstChild);
+    })
+    .catch(err => {
+        alert('Error adding to cart');
+    });
+}
+   
 
         loadVehicle();
     </script>

@@ -86,8 +86,8 @@ async function getVehicleById(vehicleId) {
 async function createAddress(userId, street, city, province, zip) {
     const [result] = await db.query(
         `INSERT INTO Address
-        (user_id, street, city, province, zip)
-        VALUES (?, ?, ?, ?, ?)`,
+        (user_id, street, city, province,country, zip)
+        VALUES (?, ?, ?, ?, 'Canada', ?)`,
         [userId, street, city, province, zip]
     );
 

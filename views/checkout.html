@@ -93,10 +93,44 @@
                     return;
                 }
 
-                document.getElementById('resultMessage').textContent =
-                    data.message;
-
                 document.getElementById('checkoutForm').style.display = 'none';
+
+// Now do payment
+const paymentRes = await fetch('/api/cart/payment', {
+    method: 'POST',
+    headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        orderId: data.orderId,
+        paymentMethod: 'credit_card'
+    })
+});
+
+const paymentData = await paymentRes.json();
+
+if (paymentRes.ok) {
+    document.getElementById('resultMessage').innerHTML = `
+        <h2> ${paymentData.message}</h2>
+        <p>Order #${data.orderId} | Total: $${data.total}</p>
+        <br>
+        <button onclick="window.location.href='catalogue.html'">
+            Continue Shopping
+        </button>
+        <button onclick="logout()">Logout</button>
+    `;
+} else {
+    document.getElementById('resultMessage').innerHTML = `
+        <h2> ${paymentData.message}</h2>
+        <p>Please try again with a different card.</p>
+        <br>
+        <button onclick="window.location.reload()">Try Again</button>
+        <button onclick="window.location.href='catalogue.html'">
+            Continue Shopping
+        </button>
+    `;
+}
 
             } catch (err) {
 
@@ -107,6 +141,11 @@
             }
 
         });
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
 
     </script>
 

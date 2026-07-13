@@ -3,6 +3,7 @@
 // queries are in dao/cartDAO.js, this file just handles req/res stuff
 
 const cartDAO = require('../dao/cartDAO');
+let paymentCounter = 0;
 
 // GET /api/cart
 exports.getCart = async (req, res) => {
@@ -180,7 +181,8 @@ exports.processPayment = async (req, res) => {
         }
 
         
-        const approved = (Math.floor(Math.random() * 3) !== 2);
+        paymentCounter++;
+const approved = (paymentCounter % 3 !== 0);
 
         if (approved) {
             await cartDAO.updateOrderStatus(orderId, 'PROCESSED');
