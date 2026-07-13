@@ -1,9 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const rangeController = require('../controllers/rangeController');
 
-// placeholder
-router.get('/', (req, res) => {
-    res.json({ message: 'Range routes working' });
-});
+// GET all vehicles with range data
+router.get('/vehicles', rangeController.getAllVehiclesWithRange);
+
+// GET range statistics
+router.get('/statistics', rangeController.getRangeStatistics);
+
+// GET top range vehicles
+router.get('/top', rangeController.getTopRangeVehicles);
+
+// POST - Range suitability checker
+router.post('/check', rangeController.checkRangeSuitability);
 
 module.exports = router;
