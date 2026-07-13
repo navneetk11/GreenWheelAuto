@@ -1,25 +1,34 @@
 const db = require('../config/db');
 
+// ===== GET ALL VEHICLES WITH RANGE DATA =====
 const getAllVehiclesWithRange = async (req, res) => {
     try {
         const [vehicles] = await db.query(`
             SELECT 
-                v.id,
-                v.brand,
-                v.name,
-                v.category,
-                v.price,
-                v.battery_capacity,
-                v.image_url,
-                v.description,
-                vr.range_km,
-                vr.city_range,
-                vr.highway_range,
-                vr.fast_charging,
-                vr.charging_time
-            FROM vehicles v
-            JOIN vehicle_range vr ON v.id = vr.vehicle_id
-            ORDER BY vr.range_km DESC
+                vid,
+                name,
+                description,
+                brand,
+                model,
+                year,
+                shape,
+                condition_type,
+                mileage,
+                price,
+                quantity,
+                range_km,
+                range_winter_km,
+                exterior_color,
+                interior_color,
+                interior_fabric,
+                charging_speed,
+                drive_type,
+                has_history_report,
+                accident_reported,
+                is_hot_deal,
+                image_url
+            FROM Item
+            ORDER BY range_km DESC
         `);
 
         res.status(200).json({
@@ -46,8 +55,9 @@ const getRangeStatistics = async (req, res) => {
                 AVG(range_km) as avg_range,
                 MIN(range_km) as min_range,
                 MAX(range_km) as max_range,
-                COUNT(CASE WHEN fast_charging = 'Yes' THEN 1 END) as fast_charging_count
-            FROM vehicle_range
+                COUNT(CASE WHEN charging_speed = 'Fast' THEN 1 END) as fast_charging_count
+            FROM Item
+            WHERE range_km IS NOT NULL
         `);
 
         res.status(200).json({
@@ -70,15 +80,17 @@ const getTopRangeVehicles = async (req, res) => {
         const limit = parseInt(req.query.limit) || 5;
         const [vehicles] = await db.query(`
             SELECT 
-                v.brand,
-                v.name,
-                v.category,
-                v.price,
-                vr.range_km,
-                vr.fast_charging
-            FROM vehicles v
-            JOIN vehicle_range vr ON v.id = vr.vehicle_id
-            ORDER BY vr.range_km DESC
+                vid,
+                brand,
+                name,
+                model,
+                price,
+                range_km,
+                range_winter_km,
+                charging_speed
+            FROM Item
+            WHERE range_km IS NOT NULL
+            ORDER BY range_km DESC
             LIMIT ?
         `, [limit]);
 
@@ -102,6 +114,7 @@ const checkRangeSuitability = async (req, res) => {
     try {
         const { dailyCommute, drivingType, homeCharger } = req.body;
 
+        // Validate required fields
         if (!dailyCommute || !drivingType) {
             return res.status(400).json({
                 success: false,
@@ -117,24 +130,22 @@ const checkRangeSuitability = async (req, res) => {
             });
         }
 
+        // Get all vehicles with range data from Item table
         const [vehicles] = await db.query(`
             SELECT 
-                v.id,
-                v.brand,
-                v.name,
-                v.category,
-                v.price,
-                v.battery_capacity,
-                v.image_url,
-                v.description,
-                vr.range_km,
-                vr.city_range,
-                vr.highway_range,
-                vr.fast_charging,
-                vr.charging_time
-            FROM vehicles v
-            JOIN vehicle_range vr ON v.id = vr.vehicle_id
-            ORDER BY vr.range_km DESC
+                vid,
+                name,
+                brand,
+                model,
+                price,
+                range_km,
+                range_winter_km,
+                charging_speed,
+                shape,
+                drive_type
+            FROM Item
+            WHERE range_km IS NOT NULL
+            ORDER BY range_km DESC
         `);
 
         if (vehicles.length === 0) {
@@ -144,22 +155,21 @@ const checkRangeSuitability = async (req, res) => {
             });
         }
 
-        let winterReduction = 0.30;
+        // Winter range reduction based on driving type
+        let winterReduction = 0.30; // Mixed
         if (drivingType === 'City') winterReduction = 0.25;
         else if (drivingType === 'Highway') winterReduction = 0.40;
 
+        // Home charger bonus
         const chargerBonus = (homeCharger === 'Yes') ? 0.05 : 0;
 
+        // Calculate results for each vehicle
         const results = vehicles.map(vehicle => {
-            let baseRange = vehicle.range_km;
-            if (drivingType === 'City' && vehicle.city_range) {
-                baseRange = vehicle.city_range;
-            } else if (drivingType === 'Highway' && vehicle.highway_range) {
-                baseRange = vehicle.highway_range;
-            }
-
-            const winterRange = Math.round(baseRange * (1 - winterReduction + chargerBonus));
+            // Use winter range if available, otherwise calculate from EPA range
+            let baseRange = vehicle.range_winter_km || vehicle.range_km;
+            let winterRange = Math.round(baseRange * (1 - winterReduction + chargerBonus));
             
+            // Suitability check
             let suitability, status, message, recommendation;
 
             if (winterRange >= commuteKm * 1.3) {
@@ -180,20 +190,17 @@ const checkRangeSuitability = async (req, res) => {
             }
 
             return {
-                vehicle_id: vehicle.id,
-                brand: vehicle.brand,
+                vid: vehicle.vid,
                 name: vehicle.name,
-                category: vehicle.category,
+                brand: vehicle.brand,
+                model: vehicle.model,
                 price: vehicle.price,
-                battery_capacity: vehicle.battery_capacity,
-                image_url: vehicle.image_url || null,
-                description: vehicle.description || null,
+                shape: vehicle.shape,
+                drive_type: vehicle.drive_type,
                 range_km: vehicle.range_km,
-                city_range: vehicle.city_range,
-                highway_range: vehicle.highway_range,
+                range_winter_km: vehicle.range_winter_km,
                 winter_range: winterRange,
-                fast_charging: vehicle.fast_charging,
-                charging_time: vehicle.charging_time,
+                charging_speed: vehicle.charging_speed,
                 suitability,
                 status,
                 message,
@@ -201,6 +208,7 @@ const checkRangeSuitability = async (req, res) => {
             };
         });
 
+        // Sort by suitability (SUITABLE first, then BORDERLINE, then NOT RECOMMENDED)
         const sortedResults = results.sort((a, b) => {
             const order = { 'SUITABLE': 1, 'BORDERLINE': 2, 'NOT RECOMMENDED': 3 };
             return order[a.suitability] - order[b.suitability];
