@@ -1,4 +1,4 @@
-markdown# GreenWheel Auto — Electric Vehicle Online Store
+# GreenWheel Auto — Electric Vehicle Online Store
 EECS 4413 Section A | Summer 2026 | Group Project  
 
 ## Team Members
