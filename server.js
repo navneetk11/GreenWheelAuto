@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'views')));
-
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 // Routes
 app.use('/api/vehicles', require('./routes/vehicleRoutes'));
 app.use('/api/auth',     require('./routes/authRoutes'));
