@@ -2,132 +2,294 @@
 <html>
 <head>
     <title>GreenWheel Auto - Vehicle Catalogue</title>
-</head>
-<body>
-    <body>
-    
-       
-         <div style="text-align:right; padding:10px;">
-            <span id="welcomeMsg"></span>
-            <button onclick="logout()">Logout</button>
-        </div>
-   
-    <hr>
-    <h1>GreenWheel Auto — Vehicle Catalogue</h1>
- 
-    <h3>Filter</h3>
-    Brand: <input type="text" id="brand" placeholder="e.g. Tesla"/>
-    Shape: <input type="text" id="shape" placeholder="e.g. SUV"/>
-    Year:  <input type="text" id="year"  placeholder="e.g. 2023"/>
-    Accident Reported:
-    <select id="accident">
-        <option value="">Any</option>
-        <option value="false">No Accidents</option>
-        <option value="true">Has Accidents</option>
-    </select>
-    <button onclick="applyFilter()">Apply Filter</button>
 
-    <h3>Sort</h3>
-    Sort By:
-    <select id="sortBy">
-        <option value="price">Price</option>
-        <option value="mileage">Mileage</option>
-        <option value="year">Year</option>
-    </select>
-    Order:
-    <select id="sortOrder">
-        <option value="asc">Low to High</option>
-        <option value="desc">High to Low</option>
-    </select>
-    <button onclick="applySort()">Apply Sort</button>
-    <button onclick="loadAllVehicles()">Show All Vehicles</button>
-
-    <hr>
-    <div id="vehicles"></div>
-
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
     <script>
-        const API = 'http://localhost:5000/api/vehicles';
-
-        let currentFilters = {
-            brand: '', shape: '', year: '', accident: '',
-            sortBy: 'price', sortOrder: 'asc'
-        };
-
-        function displayVehicles(data) {
-            const container = document.getElementById('vehicles');
-            if (data.length === 0) {
-                container.innerHTML = '<p>No vehicles found.</p>';
-                return;
-            }
-            container.innerHTML = data.map(v => `
-                <div style="border:1px solid black; margin:10px; padding:10px;">
-                    <h3>${v.brand} ${v.model} ${v.year}</h3>
-                    <p>${v.shape} | ${v.condition_type} | Range: ${v.range_km}km</p>
-                    <p>Price: $${v.price}</p>
-                    <a href="vehicle-detail.html?vid=${v.vid}">
-                        <button>View Details</button>
-                    </a>
-                </div>
-            `).join('');
-        }
-
-        async function fetchVehicles() {
-            let url = `${API}/filter?`;
-            if (currentFilters.brand)    url += `brand=${currentFilters.brand}&`;
-            if (currentFilters.shape)    url += `shape=${currentFilters.shape}&`;
-            if (currentFilters.year)     url += `year=${currentFilters.year}&`;
-            if (currentFilters.accident) url += `accident_reported=${currentFilters.accident}&`;
-            url += `sortBy=${currentFilters.sortBy}&sortOrder=${currentFilters.sortOrder}`;
-
-            const res = await fetch(url);
-            const data = await res.json();
-            displayVehicles(data);
-        }
-
-        async function applyFilter() {
-            currentFilters.brand    = document.getElementById('brand').value;
-            currentFilters.shape    = document.getElementById('shape').value;
-            currentFilters.year     = document.getElementById('year').value;
-            currentFilters.accident = document.getElementById('accident').value;
-            await fetchVehicles();
-        }
-
-        async function applySort() {
-            currentFilters.sortBy    = document.getElementById('sortBy').value;
-            currentFilters.sortOrder = document.getElementById('sortOrder').value;
-            await fetchVehicles();
-        }
-
-        async function loadAllVehicles() {
-            currentFilters = {
-                brand: '', shape: '', year: '', accident: '',
-                sortBy: 'price', sortOrder: 'asc'
-            };
-            document.getElementById('brand').value    = '';
-            document.getElementById('shape').value    = '';
-            document.getElementById('year').value     = '';
-            document.getElementById('accident').value = '';
-            await fetchVehicles();
-        }
-
-        loadAllVehicles();
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              bg: "#0B0D0C",       // near-black page background
+              surface: "#16191A",  // card / panel surface, one step lighter than bg
+              ink: "#F5F6F2",      // primary text (near-white)
+              accent: "#C4F135",   // electric volt-lime — CTAs, charge bar, active states
+              circuit: "#4FD1E8",  // bright cyan — secondary accent, badges
+              line: "#2A2D2A",     // hairline borders on dark surfaces
+              muted: "#9AA39C",    // secondary text on dark
+            },
+            fontFamily: {
+              display: ["'Space Grotesk'", "sans-serif"],
+              body: ["'Inter'", "sans-serif"],
+              mono: ["'IBM Plex Mono'", "monospace"],
+            },
+            borderRadius: { card: "1rem" },
+          },
+        },
+      };
     </script>
-
-    <script>
-    // Show welcome message
-const user = JSON.parse(localStorage.getItem('user'));
-if (user) {
-    document.getElementById('welcomeMsg').textContent = 
-        `Welcome, ${user.fname}! `;
+    <style>
+       .bg-decor {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  background-image: url('/images/bg.png');
+  background-size: cover;
+  background-position: center;
+  filter: blur(5px);
+  transform: scale(1.05);
+  opacity: 1;
+  pointer-events: none;
 }
-
-function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    alert('Logged out successfully!');
-    window.location.href = 'login.html';
+.bg-decor-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -9;
+  background: rgba(10, 5, 12, 0.75);
+  pointer-events: none;
 }
-</script>
+      
+      body { font-family: 'Inter', sans-serif; background-color: #0B0D0C; color: #F5F6F2; }
+      h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+      .spec-mono { font-family: 'IBM Plex Mono', monospace; }
+      .charge-bar-track { width: 100%; height: 5px; border-radius: 9999px; background-color: #2A2D2A; overflow: hidden; }
+      .charge-bar-fill { height: 100%; background: linear-gradient(90deg, #4FD1E8, #C4F135); border-radius: 9999px; transition: width 0.6s ease; }
+      .hero-glow { background: radial-gradient(60% 60% at 50% 0%, rgba(196,241,53,0.10), transparent 70%); }
+      ::-webkit-scrollbar { height: 8px; }
+      ::-webkit-scrollbar-thumb { background: #2A2D2A; border-radius: 8px; }
+    </style>
+</head>
+<body class="bg-bg text-ink font-body">
+    <div class="bg-decor"></div>
+<div class="bg-decor-overlay"></div>
 
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-50 pt-3 pb-3 px-2 sm:px-4 bg-bg/60 backdrop-blur-sm">
+  <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+
+    <a href="/catalogue.html" class="flex items-center shrink-0 -ml-1">
+      <img src="/images/logo.png" alt="GreenWheel Auto" class="h-24 w-auto" />
+    </a>
+
+    <nav class="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5">
+      <a href="/catalogue.html" class="px-4 py-2 rounded-full text-sm font-medium bg-accent/15 text-accent">Browse</a>
+      <a href="/range-checker.html" class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors">Range Checker</a>
+      <a href="/cart.html" class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors">Cart</a>
+    </nav>
+
+    <div id="nav-auth-area" class="shrink-0 text-sm"></div>
+  </div>
+</header>
+ 
+ 
+ 
+ 
+
+  <!-- HERO -->
+  <section class="hero-glow border-b border-line">
+    <div class="max-w-6xl mx-auto px-4 pt-20 pb-14 text-center">
+      <p class="spec-mono text-circuit text-xs tracking-widest uppercase mb-4">Electric. Curated. Ready to drive.</p>
+      <h1 class="text-5xl md:text-6xl font-display font-bold leading-tight mb-5">
+        Find your next<br/>electric vehicle
+      </h1>
+      <p class="text-muted text-lg max-w-xl mx-auto mb-8">
+        Browse a curated fleet of EVs — compare range, check pricing, and take one home. 
+      </p>
+      <a href="#browse" class="inline-block bg-accent text-bg font-semibold px-7 py-3 rounded-card hover:opacity-90 transition-opacity">
+        Browse the fleet
+      </a>
+
+      <!-- floating stat strip -->
+      <div class="flex flex-wrap justify-center gap-6 md:gap-10 mt-14 spec-mono text-sm">
+        <div>
+          <div class="text-2xl font-semibold text-ink">10</div>
+          <div class="text-muted text-xs">EVs available</div>
+        </div>
+        <div class="w-px bg-line hidden md:block"></div>
+        <div>
+          <div class="text-2xl font-semibold text-ink">630km</div>
+          <div class="text-muted text-xs">longest range</div>
+        </div>
+        <div class="w-px bg-line hidden md:block"></div>
+        <div>
+          <div class="text-2xl font-semibold text-ink">$43,000</div>
+          <div class="text-muted text-xs">starting from</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOT DEALS -->
+  <section class="max-w-6xl mx-auto px-4 py-12">
+    <div class="mb-5">
+  <span class="inline-flex items-center gap-2 bg-accent/20 text-accent text-lg font-bold px-6 py-3 rounded-full">
+    🔥 Hot Deals
+  </span>
+</div>
+    <div id="hot-deals" class="flex gap-5 overflow-x-auto pb-3"></div>
+  </section>
+
+  <!-- FILTER + SORT -->
+  <section id="browse" class="max-w-6xl mx-auto px-4 mb-6 scroll-mt-20">
+    <div class="bg-surface border border-line rounded-card p-5 flex flex-wrap gap-4 items-end">
+      <div>
+        <label class="block text-sm text-muted mb-1">Brand</label>
+        <input type="text" id="brand" placeholder="e.g. Tesla" class="bg-bg border border-line rounded px-3 py-1.5 text-sm w-32 text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent"/>
+      </div>
+      <div>
+        <label class="block text-sm text-muted mb-1">Shape</label>
+        <input type="text" id="shape" placeholder="e.g. SUV" class="bg-bg border border-line rounded px-3 py-1.5 text-sm w-28 text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent"/>
+      </div>
+      <div>
+        <label class="block text-sm text-muted mb-1">Year</label>
+        <input type="text" id="year" placeholder="e.g. 2023" class="bg-bg border border-line rounded px-3 py-1.5 text-sm w-24 text-ink placeholder:text-muted/60 focus:outline-none focus:border-accent"/>
+      </div>
+      <div>
+        <label class="block text-sm text-muted mb-1">Accident Reported</label>
+        <select id="accident" class="bg-bg border border-line rounded px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-accent">
+          <option value="">Any</option>
+          <option value="false">No Accidents</option>
+          <option value="true">Has Accidents</option>
+        </select>
+      </div>
+      <button onclick="applyFilter()" class="bg-accent text-bg font-medium px-4 py-1.5 rounded-card text-sm hover:opacity-90">Apply Filter</button>
+
+      <div class="w-px h-8 bg-line mx-2 hidden md:block"></div>
+
+      <div>
+        <label class="block text-sm text-muted mb-1">Sort By</label>
+        <select id="sortBy" class="bg-bg border border-line rounded px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-accent">
+          <option value="price">Price</option>
+          <option value="mileage">Mileage</option>
+          <option value="year">Year</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm text-muted mb-1">Order</label>
+        <select id="sortOrder" class="bg-bg border border-line rounded px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-accent">
+          <option value="asc">Low to High</option>
+          <option value="desc">High to Low</option>
+        </select>
+      </div>
+      <button onclick="applySort()" class="bg-accent text-bg font-medium px-4 py-1.5 rounded-card text-sm hover:opacity-90">Apply Sort</button>
+      <button onclick="loadAllVehicles()" class="border border-line px-4 py-1.5 rounded-card text-sm text-muted hover:text-ink hover:border-accent">Show All</button>
+    </div>
+  </section>
+
+  <!-- VEHICLE GRID -->
+  <section class="max-w-6xl mx-auto px-4 pb-20">
+    <div id="vehicles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </section>
+
+  <script>
+    // ---- shared vehicle card renderer ----
+    function renderVehicleCard(v) {
+      const rangeKm = v.range_km || 0;
+      const rangePercent = Math.min(100, Math.round((rangeKm / 700) * 100));
+      const imageUrl = v.image_url || '/images/vehicles/placeholder.jpg';
+      return `
+        <a href="vehicle-detail.html?vid=${v.vid}"
+           class="group block bg-surface border border-line rounded-card overflow-hidden hover:border-accent/60 transition-all">
+          <div class="relative aspect-[4/3] bg-bg overflow-hidden">
+            <img src="${imageUrl}" alt="${v.brand} ${v.model}"
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <span class="absolute top-3 left-3 bg-bg/80 backdrop-blur text-circuit text-xs font-mono px-2 py-1 rounded border border-line">${v.condition_type}</span>
+          </div>
+          <div class="p-5">
+            <h3 class="font-display font-semibold text-ink mb-0.5">${v.brand} ${v.model} ${v.year}</h3>
+            <p class="text-sm text-muted mb-3">${v.shape}</p>
+            <div class="flex items-center justify-between mb-1.5 spec-mono text-circuit text-xs">
+              <span>⚡ ${rangeKm}km range</span>
+            </div>
+            <div class="charge-bar-track mb-3">
+              <div class="charge-bar-fill" style="width: ${rangePercent}%"></div>
+            </div>
+            <p class="spec-mono text-ink font-semibold text-lg">$${Number(v.price).toLocaleString()}</p>
+          </div>
+        </a>
+      `;
+    }
+
+    // ---- your existing logic, unchanged ----
+    const API = 'http://localhost:5000/api/vehicles';
+
+    let currentFilters = {
+        brand: '', shape: '', year: '', accident: '',
+        sortBy: 'price', sortOrder: 'asc'
+    };
+
+    function displayVehicles(data) {
+        const container = document.getElementById('vehicles');
+        if (data.length === 0) {
+            container.innerHTML = '<p class="text-muted col-span-full text-center py-12">No vehicles found.</p>';
+            return;
+        }
+        container.innerHTML = data.map(renderVehicleCard).join('');
+    }
+
+    async function fetchVehicles() {
+        let url = `${API}/filter?`;
+        if (currentFilters.brand)    url += `brand=${currentFilters.brand}&`;
+        if (currentFilters.shape)    url += `shape=${currentFilters.shape}&`;
+        if (currentFilters.year)     url += `year=${currentFilters.year}&`;
+        if (currentFilters.accident) url += `accident_reported=${currentFilters.accident}&`;
+        url += `sortBy=${currentFilters.sortBy}&sortOrder=${currentFilters.sortOrder}`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+        displayVehicles(data);
+    }
+
+    async function applyFilter() {
+        currentFilters.brand    = document.getElementById('brand').value;
+        currentFilters.shape    = document.getElementById('shape').value;
+        currentFilters.year     = document.getElementById('year').value;
+        currentFilters.accident = document.getElementById('accident').value;
+        await fetchVehicles();
+    }
+
+    async function applySort() {
+        currentFilters.sortBy    = document.getElementById('sortBy').value;
+        currentFilters.sortOrder = document.getElementById('sortOrder').value;
+        await fetchVehicles();
+    }
+
+    async function loadAllVehicles() {
+        currentFilters = { brand: '', shape: '', year: '', accident: '', sortBy: 'price', sortOrder: 'asc' };
+        document.getElementById('brand').value    = '';
+        document.getElementById('shape').value    = '';
+        document.getElementById('year').value     = '';
+        document.getElementById('accident').value = '';
+        await fetchVehicles();
+    }
+
+    async function loadHotDeals() {
+        const res = await fetch(`${API}/hot-deals`);
+        const data = await res.json();
+        document.getElementById('hot-deals').innerHTML = data.map(v => `
+          <div class="min-w-[260px]">${renderVehicleCard(v)}</div>
+        `).join('');
+    }
+
+    loadAllVehicles();
+    loadHotDeals();
+
+    // ---- auth state + logout ----
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const authArea = document.getElementById('nav-auth-area');
+    authArea.innerHTML = user
+      ? `<div class="flex items-center gap-3">
+           <span class="text-muted">Welcome, ${user.fname}!</span>
+           <button onclick="logout()" class="text-circuit hover:underline">Sign out</button>
+         </div>`
+      : `<a href="/login.html" class="bg-accent text-bg font-medium px-4 py-1.5 rounded-card hover:opacity-90">Login / Register</a>`;
+
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+    }
+  </script>
 </body>
 </html>

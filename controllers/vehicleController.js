@@ -90,9 +90,19 @@ const sortVehicles = async (req, res) => {
     }
 };
 
+// UC — Hot deals (lowest-priced vehicles)
+const getHotDeals = async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM Item ORDER BY price ASC LIMIT 4');
+        res.status(200).json(rows);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
 module.exports = {
     getAllVehicles,
     getVehicleById,
     filterVehicles,
-    sortVehicles
+    sortVehicles,
+    getHotDeals
 };

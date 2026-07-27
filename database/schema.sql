@@ -137,12 +137,12 @@ INSERT INTO Item (vid, name, description, brand, model, year, shape, condition_t
 ('v001', 'Tesla Model Y', 'Mid-size AWD SUV with long range', 'Tesla', 'Model Y', 2023, 'SUV', 'New', 0, 67999, 10, 533, 415, 'Midnight Silver', 'Black', 'Vegan Leather', 'Fast', 'AWD', FALSE, FALSE, TRUE),
 ('v002', 'Tesla Model 3', 'Compact sedan with autopilot', 'Tesla', 'Model 3', 2023, 'Sedan', 'New', 0, 54999, 8, 576, 448, 'Pearl White', 'Black', 'Vegan Leather', 'Fast', 'RWD', FALSE, FALSE, FALSE),
 ('v003', 'BMW iX', 'Luxury electric SUV', 'BMW', 'iX xDrive50', 2023, 'SUV', 'New', 0, 96000, 5, 630, 490, 'Alpine White', 'Mocha', 'Leather', 'Fast', 'AWD', FALSE, FALSE, FALSE),
-('v004', 'Hyundai IONIQ 6', 'Streamlined long-range sedan', 'Hyundai', 'IONIQ 6', 2024, 'Sedan', 'New', 0, 54000, 8, 581, 450, 'Gravity Gold', 'Black', 'Cloth', 'Fast', 'RWD', FALSE, FALSE, TRUE),
+('v004', 'Hyundai IONIQ 6', 'Streamlined long-range sedan', 'Hyundai', 'IONIQ 6', 2024, 'Sedan', 'New', 0, 54000, 8, 581, 450, 'Gravity Gold', 'Light Blue', 'Cloth', 'Fast', 'RWD', FALSE, FALSE, TRUE),
 ('v005', 'Porsche Taycan', 'High performance luxury EV', 'Porsche', 'Taycan', 2023, 'Sedan', 'New', 0, 133000, 4, 484, 370, 'Frozen Blue', 'Cognac', 'Leather', 'Fast', 'AWD', FALSE, FALSE, FALSE),
 ('v006', 'Rivian R1T', 'Electric adventure truck', 'Rivian', 'R1T', 2022, 'Truck', 'Used', 18000, 72000, 3, 505, 390, 'Forest Green', 'Black', 'Vegan Leather', 'Fast', 'AWD', TRUE, FALSE, FALSE),
 ('v007', 'Ford Mustang Mach-E', 'Electric muscle SUV', 'Ford', 'Mustang Mach-E', 2023, 'SUV', 'New', 0, 58000, 6, 490, 375, 'Rapid Red', 'Black', 'Cloth', 'Fast', 'AWD', FALSE, FALSE, TRUE),
-('v008', 'Chevrolet Equinox EV', 'Affordable family SUV', 'Chevrolet', 'Equinox EV', 2024, 'SUV', 'New', 0, 43000, 12, 483, 370, 'Summit White', 'Gray', 'Cloth', 'Standard', 'FWD', FALSE, FALSE, FALSE),
-('v009', 'Audi Q8 e-tron', 'Premium electric SUV', 'Audi', 'Q8 e-tron', 2023, 'SUV', 'New', 0, 89000, 4, 582, 450, 'Glacier White', 'Brown', 'Leather', 'Fast', 'AWD', FALSE, FALSE, FALSE),
+('v008', 'Chevrolet Equinox EV', 'Affordable family SUV', 'Chevrolet', 'Equinox EV', 2024, 'SUV', 'New', 0, 43000, 12, 483, 370, 'Black', 'Gray', 'Cloth', 'Standard', 'FWD', FALSE, FALSE, FALSE),
+('v009', 'Audi Q8 e-tron', 'Premium electric SUV', 'Audi', 'Q8 e-tron', 2023, 'SUV',
 ('v010', 'Nissan Ariya', 'Stylish crossover EV', 'Nissan', 'Ariya', 2023, 'SUV', 'New', 0, 47000, 7, 402, 310, 'Warm Silver', 'Black', 'Cloth', 'Standard', 'FWD', FALSE, FALSE, FALSE);
 
 -- ─────────────────────────────────────────

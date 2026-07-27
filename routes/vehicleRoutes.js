@@ -4,7 +4,8 @@ const {
     getAllVehicles,
     getVehicleById,
     filterVehicles,
-    sortVehicles
+    sortVehicles,
+    getHotDeals
 } = require('../controllers/vehicleController');
 
 // UC03 — Browse all vehicles
@@ -15,6 +16,7 @@ router.get('/filter', filterVehicles);
 
 // UC04 — Sort vehicles
 router.get('/sort', sortVehicles);
+router.get('/hot-deals', getHotDeals);
 
 // UC06 — Vehicle detail (must be last!)
 router.get('/:id', getVehicleById);
