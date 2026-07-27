@@ -2,108 +2,213 @@
 <html>
 <head>
     <title>GreenWheel Auto - Vehicle Detail</title>
-</head>
-<body>
-   
-    <div style="text-align:right; padding:10px;">
-        <button onclick="logout()">Logout</button>
-    </div>
-    <a href="catalogue.html"><button>← Back to Catalogue</button></a>
 
-    <div id="vehicle-detail"></div>
-
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
     <script>
-        const API = 'http://localhost:5000/api/vehicles';
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              bg: "#0B0D0C", surface: "#16191A", ink: "#F5F6F2",
+              accent: "#C4F135", circuit: "#4FD1E8", line: "#2A2D2A", muted: "#9AA39C",
+            },
+            fontFamily: {
+              display: ["'Space Grotesk'", "sans-serif"],
+              body: ["'Inter'", "sans-serif"],
+              mono: ["'IBM Plex Mono'", "monospace"],
+            },
+            borderRadius: { card: "1rem" },
+          },
+        },
+      };
+    </script>
+    <style>
+     .bg-decor {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  background-image: url('/images/bg.png');
+  background-size: cover;
+  background-position: center;
+  filter: blur(15px);
+  transform: scale(1.05);
+  opacity: 1;
+  pointer-events: none;
+}
+.bg-decor-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -9;
+  background: rgba(10, 5, 12, 0.75);
+  pointer-events: none;
+}
+      body { font-family: 'Inter', sans-serif; background-color: #0B0D0C; color: #F5F6F2; }
+      h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+      .spec-mono { font-family: 'IBM Plex Mono', monospace; }
+      .charge-bar-track { width: 100%; height: 5px; border-radius: 9999px; background-color: #2A2D2A; overflow: hidden; }
+      .charge-bar-fill { height: 100%; background: linear-gradient(90deg, #4FD1E8, #C4F135); border-radius: 9999px; }
+    </style>
+</head>
+<body class="bg-bg text-ink font-body">
+    <div class="bg-decor"></div>
+<div class="bg-decor-overlay"></div>
 
-        // Get vehicle ID from URL
-        const params = new URLSearchParams(window.location.search);
-        const vid = params.get('vid');
+  <header class="sticky top-0 z-50 py-2 px-2 sm:px-4 bg-bg/60 backdrop-blur-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+      <a href="/catalogue.html" class="flex items-center shrink-0 -ml-1">
+        <img src="/images/logo.png" alt="GreenWheel Auto" class="h-24 w-auto" />
+      </a>
+      <nav class="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5">
+        <a href="/catalogue.html" class="px-4 py-2 rounded-full text-sm font-medium bg-accent/15 text-accent">Browse</a>
+        <a href="/range-checker.html" class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors">Range Checker</a>
+        <a href="/cart.html" class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors">Cart</a>
+      </nav>
+      <div id="nav-auth-area" class="shrink-0 text-sm"></div>
+    </div>
+  </header>
 
-        async function loadVehicle() {
-            if (!vid) {
-                document.getElementById('vehicle-detail').innerHTML = 
-                    '<p>No vehicle selected.</p>';
-                return;
-            }
+  <div class="max-w-5xl mx-auto px-4 py-6">
+    <a href="catalogue.html" class="inline-flex items-center gap-1.5 text-sm font-medium text-ink bg-surface border border-line px-3 py-1.5 rounded-card hover:border-accent hover:text-accent transition-colors mb-4">
+  ← Back to catalogue
+</a>
+    <div id="cart-message"></div>
+    <div id="vehicle-detail"></div>
+  </div>
 
-            const res = await fetch(`${API}/${vid}`);
-            const v = await res.json();
+  <script>
+    const API = 'http://localhost:5000/api/vehicles';
 
-            document.getElementById('vehicle-detail').innerHTML = `
-                <h1>${v.brand} ${v.model} ${v.year}</h1>
-                <hr>
-                <p><strong>Brand:</strong> ${v.brand}</p>
-                <p><strong>Model:</strong> ${v.model}</p>
-                <p><strong>Year:</strong> ${v.year}</p>
-                <p><strong>Condition:</strong> ${v.condition_type}</p>
-                <p><strong>Price:</strong> $${v.price}</p>
-                <p><strong>Mileage:</strong> ${v.mileage} km</p>
-                <p><strong>Range (EPA):</strong> ${v.range_km} km</p>
-                <p><strong>Winter Range:</strong> ${v.range_winter_km} km</p>
-                <p><strong>Shape:</strong> ${v.shape}</p>
-                <p><strong>Drive Type:</strong> ${v.drive_type}</p>
-                <p><strong>Exterior Color:</strong> ${v.exterior_color}</p>
-                <p><strong>Interior Color:</strong> ${v.interior_color}</p>
-                <p><strong>Interior Fabric:</strong> ${v.interior_fabric}</p>
-                <p><strong>Charging Speed:</strong> ${v.charging_speed}</p>
-                <p><strong>Accident Reported:</strong> 
-                    ${v.accident_reported ? 'Yes' : 'None'}</p>
-                <hr>
-                <button onclick="addToCart('${v.vid}', '${v.brand} ${v.model}', ${v.price})">
-                    Add to Cart
-                </button>
-                <a href="range-checker.html">
-                    <button>Check Range Suitability</button>
-                </a>
-            `;
+    const params = new URLSearchParams(window.location.search);
+    const vid = params.get('vid');
+
+    async function loadVehicle() {
+        if (!vid) {
+            document.getElementById('vehicle-detail').innerHTML =
+                '<p class="text-muted">No vehicle selected.</p>';
+            return;
         }
 
-        function addToCart(vid, name, price) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        alert('Please login first!');
-        window.location.href = 'login.html';
-        return;
+        const res = await fetch(`${API}/${vid}`);
+        const v = await res.json();
+
+        const rangeKm = v.range_km || 0;
+        const rangePercent = Math.min(100, Math.round((rangeKm / 700) * 100));
+        const imageUrl = v.image_url || '/images/vehicles/placeholder.jpg';
+
+        const specs = [
+            ['Mileage', `${v.mileage} km`],
+            ['Winter range', `${v.range_winter_km} km`],
+            ['Drive type', v.drive_type],
+            ['Exterior color', v.exterior_color],
+            ['Interior color', v.interior_color],
+            ['Interior fabric', v.interior_fabric],
+            ['Charging speed', v.charging_speed],
+            ['Accident reported', v.accident_reported ? 'Yes' : 'None'],
+        ];
+
+        document.getElementById('vehicle-detail').innerHTML = `
+            <div class="grid md:grid-cols-2 gap-8">
+             <div class="bg-surface border border-line rounded-card overflow-hidden aspect-[4/3]">
+    <img src="${imageUrl}" alt="${v.brand} ${v.model}" class="w-full h-full object-cover" />
+</div>
+
+                <div>
+                    <span class="inline-block bg-bg border border-line text-circuit text-xs font-mono px-2 py-1 rounded mb-3">
+                        ${v.condition_type}
+                    </span>
+                    <h1 class="text-3xl font-display font-bold mb-1">${v.brand} ${v.model} ${v.year}</h1>
+                    <p class="text-muted mb-4">${v.shape}</p>
+
+                    <p class="spec-mono text-3xl font-semibold mb-4">$${Number(v.price).toLocaleString()}</p>
+
+                    <div class="mb-2 flex items-center justify-between spec-mono text-circuit text-sm">
+                        <span>⚡ ${rangeKm}km range</span>
+                    </div>
+                    <div class="charge-bar-track mb-6">
+                        <div class="charge-bar-fill" style="width: ${rangePercent}%"></div>
+                    </div>
+
+                    <div class="flex gap-3 mb-8">
+                        <button onclick="addToCart('${v.vid}', '${v.brand} ${v.model}', ${v.price})"
+                            class="flex-1 bg-accent text-bg font-semibold px-5 py-3 rounded-card hover:opacity-90 transition-opacity">
+                            Add to cart
+                        </button>
+                        <a href="range-checker.html"
+                           class="flex-1 text-center border border-line px-5 py-3 rounded-card text-sm text-muted hover:text-ink hover:border-accent transition-colors">
+                            Check range suitability
+                        </a>
+                    </div>
+
+                    <div class="bg-surface border border-line rounded-card p-5 grid grid-cols-2 gap-x-6 gap-y-3">
+                        ${specs.map(([label, value]) => `
+                            <div>
+                                <div class="text-xs text-muted mb-0.5">${label}</div>
+                                <div class="spec-mono text-sm text-ink">${value}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
-    fetch('http://localhost:5000/api/cart', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ vehicleId: vid, quantity: 1 })
-    })
-    .then(res => res.json())
-    .then(data => {
-        // Show inline message instead of alert
-        const msg = document.createElement('div');
-        msg.innerHTML = `
-            <p> ${name} added to cart!</p>
-            <button onclick="window.location.href='cart.html'">
-                View Cart
-            </button>
-            <button onclick="window.location.href='catalogue.html'">
-                Continue Shopping
-            </button>
-        `;
-        document.body.insertBefore(msg, document.body.firstChild);
-    })
-    .catch(err => {
-        alert('Error adding to cart');
-    });
-}
-   
+    function addToCart(vid, name, price) {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Please login first!');
+            window.location.href = 'login.html';
+            return;
+        }
 
-        loadVehicle();
-    </script>
-</body>
-<script>
+        fetch('http://localhost:5000/api/cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ vehicleId: vid, quantity: 1 })
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('cart-message').innerHTML = `
+                <div class="bg-surface border border-accent/40 rounded-card p-4 mb-4 flex items-center justify-between flex-wrap gap-3">
+                    <p class="text-sm">${name} added to cart!</p>
+                    <div class="flex gap-2">
+                        <button onclick="window.location.href='cart.html'"
+                            class="bg-accent text-bg text-sm font-medium px-4 py-1.5 rounded-card hover:opacity-90">
+                            View cart
+                        </button>
+                        <button onclick="window.location.href='catalogue.html'"
+                            class="border border-line text-sm text-muted px-4 py-1.5 rounded-card hover:text-ink">
+                            Continue shopping
+                        </button>
+                    </div>
+                </div>
+            `;
+        })
+        .catch(err => {
+            alert('Error adding to cart');
+        });
+    }
+
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const authArea = document.getElementById('nav-auth-area');
+    authArea.innerHTML = user
+      ? `<div class="flex items-center gap-3">
+           <span class="text-muted">Welcome, ${user.fname}!</span>
+           <button onclick="logout()" class="text-circuit hover:underline">Sign out</button>
+         </div>`
+      : `<a href="/login.html" class="bg-accent text-bg font-medium px-4 py-1.5 rounded-card hover:opacity-90">Login / Register</a>`;
+
     function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    alert('Logged out successfully!');
-    window.location.href = 'login.html';
-}
-</script>
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+    }
+
+    loadVehicle();
+  </script>
+</body>
 </html>
