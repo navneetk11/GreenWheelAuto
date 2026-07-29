@@ -265,72 +265,27 @@
         }
       });
 
-      function displayResults(data) {
-        const resultsSection = document.getElementById('resultsSection');
-        
-        let html = `
-          <div class="mb-6 flex items-center justify-between">
-            <h2 class="text-2xl font-display font-bold">📊 Results (${data.count} vehicles)</h2>
-            <span class="text-sm text-muted">${data.user_inputs.daily_commute}km · ${data.user_inputs.driving_type} · Charger: ${data.user_inputs.home_charger}</span>
-          </div>
-        `;
-        
-        data.data.forEach(vehicle => {
-          const statusClass = vehicle.suitability.toLowerCase().replace(' ', '-');
-          const statusEmoji = vehicle.status;
-          
-          const rangePercent = Math.min(100, Math.round((vehicle.range_km / 700) * 100));
-          
-          html += `
-            <div class="result-card ${statusClass} mb-4">
-              <div class="flex items-start justify-between mb-3">
-                <div>
-                  <h3 class="text-xl font-display font-bold text-ink">
-                    ${vehicle.brand} ${vehicle.name}
-                    <span class="text-sm text-muted font-normal">(${vehicle.model || vehicle.category || ''})</span>
-                  </h3>
-                  <p class="text-sm text-muted">${vehicle.shape || ''} · ${vehicle.drive_type || ''}</p>
-                </div>
-                <span class="status-badge ${statusClass}">
-                  ${statusEmoji} ${vehicle.suitability}
-                </span>
-              </div>
-
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-                <div class="bg-bg rounded-lg p-3 border border-line/50">
-                  <p class="text-xs text-muted uppercase">Price</p>
-                  <p class="text-sm font-semibold spec-mono">$${Number(vehicle.price).toLocaleString()}</p>
-                </div>
-                <div class="bg-bg rounded-lg p-3 border border-line/50">
-                  <p class="text-xs text-muted uppercase">EPA Range</p>
-                  <p class="text-sm font-semibold spec-mono">${vehicle.range_km} km</p>
-                </div>
-                <div class="bg-bg rounded-lg p-3 border border-line/50">
-                  <p class="text-xs text-muted uppercase">Winter Range</p>
-                  <p class="text-sm font-semibold spec-mono">${vehicle.winter_range} km</p>
-                </div>
-                <div class="bg-bg rounded-lg p-3 border border-line/50">
-                  <p class="text-xs text-muted uppercase">Charging</p>
-                  <p class="text-sm font-semibold spec-mono">${vehicle.charging_speed || 'N/A'}</p>
-                </div>
-              </div>
-
-              <div class="mt-3">
-                <div class="charge-bar-track">
-                  <div class="charge-bar-fill" style="width: ${rangePercent}%"></div>
-                </div>
-              </div>
-
-              <div class="mt-3 p-3 bg-bg rounded-lg border border-line/50">
-                <p class="text-sm"><span class="font-semibold text-accent">${vehicle.recommendation}</span></p>
-                <p class="text-sm text-muted">${vehicle.message}</p>
-              </div>
-            </div>
-          `;
-        });
-        
-        resultsSection.innerHTML = html;
-      }
+        function displayResults(data) {
+            const resultsSection = document.getElementById('resultsSection');
+            
+            let html = '<h2>Results (' + data.count + ' vehicles)</h2>';
+            
+            data.data.forEach(vehicle => {
+                html += '<hr>';
+                html += '<h3>' + vehicle.brand + ' ' + vehicle.name + ' (' + vehicle.category + ')</h3>';
+                html += '<p><strong>Status:</strong> ' + vehicle.status + ' ' + vehicle.suitability + '</p>';
+                html += '<p><strong>Price:</strong> $' + Number(vehicle.price).toLocaleString() + '</p>';
+                html += '<p><strong>EPA Range:</strong> ' + vehicle.range_km + ' km</p>';
+                html += '<p><strong>Winter Range:</strong> ' + vehicle.winter_range + ' km</p>';
+                html += '<p><strong>Fast Charging:</strong> ' + vehicle.fast_charging + '</p>';
+                html += '<p><strong>Battery:</strong> ' + (vehicle.battery_capacity || 'N/A') + ' kWh</p>';
+                html += '<p><strong>Charging Time:</strong> ' + (vehicle.charging_time || 'N/A') + '</p>';
+                html += '<p><strong>Recommendation:</strong> ' + vehicle.recommendation + '</p>';
+                html += '<p>' + vehicle.message + '</p>';
+            });
+            
+            resultsSection.innerHTML = html;
+        }
     </script>
 </body>
 </html>
