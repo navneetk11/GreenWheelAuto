@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>GreenWheel Auto - Range Suitability Checker</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -88,7 +87,8 @@
       input, select {
         background-color: #0B0D0C;
         border: 1px solid #2A2D2A;
-        color: #F5F6F2;
+        color: #6B7280;
+        font-weight: 400;
       }
       input:focus, select:focus {
         outline: none;
@@ -96,6 +96,41 @@
       }
       input::placeholder {
         color: #6B7280;
+        font-weight: 400;
+      }
+
+      select:invalid {
+        color: #6B7280;
+        font-weight: 400;
+      }
+      select:valid {
+        color: #6B7280;
+        font-weight: 400;
+      }
+      select option {
+        color: #6B7280;
+        background-color: #0B0D0C;
+        font-weight: 400;
+      }
+      select option[value=""] {
+        color: #6B7280;
+        font-weight: 400;
+      }
+
+      .btn-check-suitability {
+        background-color: #C4F135;
+        color: #0B0D0C;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 1rem;
+        transition: opacity 0.2s;
+        border: none;
+        width: 100%;
+        font-size: 1.125rem;
+        cursor: pointer;
+      }
+      .btn-check-suitability:hover {
+        opacity: 0.85;
       }
     </style>
 </head>
@@ -103,26 +138,224 @@
     <div class="bg-decor"></div>
     <div class="bg-decor-overlay"></div>
 
-    <!-- NAVBAR -->
     <header class="sticky top-0 z-50 pt-3 pb-3 px-2 sm:px-4 bg-bg/60 backdrop-blur-sm">
       <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
-
-        <!-- ✅ Fixed: /images/logo.png (not /public/images/) -->
         <a href="/catalogue.html" class="flex items-center shrink-0 -ml-1">
           <img src="/images/logo.png" alt="GreenWheel Auto" class="h-24 w-auto" />
         </a>
-
         <nav class="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5">
           <a href="/catalogue.html" class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors">Browse</a>
           <a href="/range-checker.html" class="px-4 py-2 rounded-full text-sm font-medium bg-accent/15 text-accent">Range Checker</a>
           <a href="/cart.html" class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors">Cart</a>
         </nav>
-
         <div id="nav-auth-area" class="shrink-0 text-sm"></div>
       </div>
     </header>
 
-    <!-- REST OF YOUR HTML (same as before) -->
+    <section class="hero-glow border-b border-line">
+      <div class="max-w-6xl mx-auto px-4 pt-20 pb-14 text-center">
+        <p class="spec-mono text-circuit text-xs tracking-widest uppercase mb-4">EV Range Suitability Checker</p>
+        <h1 class="text-5xl md:text-6xl font-display font-bold leading-tight mb-5">
+          Find your perfect<br/>electric match
+        </h1>
+        <p class="text-muted text-lg max-w-xl mx-auto mb-8">
+          Enter your daily commute details and we'll recommend the best EVs for your lifestyle — winter-adjusted, real-world range.
+        </p>
+      </div>
+    </section>
 
+    <section class="max-w-4xl mx-auto px-4 py-12">
+      <div class="bg-surface border border-line rounded-card p-8">
+        <form id="rangeForm" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-muted mb-1">🚗 Daily Commute (km)</label>
+              <input type="number" id="dailyCommute" placeholder="e.g. 50" min="1" required class="w-full rounded-lg px-4 py-3 bg-bg border border-line text-ink focus:border-accent focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-muted mb-1">🛣️ Driving Type</label>
+              <select id="drivingType" required class="w-full rounded-lg px-4 py-3 bg-bg border border-line text-ink focus:border-accent focus:outline-none">
+                <option value="" disabled selected>Select driving type...</option>
+                <option value="City">City (Stop & Go)</option>
+                <option value="Highway">Highway (High Speed)</option>
+                <option value="Mixed">Mixed (City + Highway)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-muted mb-1">🏠 Home Charger</label>
+              <select id="homeCharger" class="w-full rounded-lg px-4 py-3 bg-bg border border-line text-ink focus:border-accent focus:outline-none">
+                <option value="" disabled selected>Select home charger...</option>
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn-check-suitability">
+            🔍 Check Suitability
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <div class="max-w-4xl mx-auto px-4" id="loading" style="display: none;">
+      <div class="bg-surface border border-line rounded-card p-8 text-center">
+        <div class="animate-pulse flex flex-col items-center gap-3">
+          <div class="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-muted text-lg">Analyzing vehicles for your commute...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4" id="errorMessage" style="display: none;">
+      <div class="bg-red-900/20 border border-red-500/30 rounded-card p-4 text-red-400" id="errorText"></div>
+    </div>
+
+    <section class="max-w-4xl mx-auto px-4 pb-20">
+      <div id="resultsSection"></div>
+    </section>
+
+    <script>
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const authArea = document.getElementById('nav-auth-area');
+      authArea.innerHTML = user
+        ? `<div class="flex items-center gap-3">
+             <span class="text-muted">Welcome, ${user.fname}!</span>
+             <button onclick="logout()" class="text-circuit hover:underline">Sign out</button>
+           </div>`
+        : `<a href="/login.html" class="bg-accent text-bg font-medium px-4 py-1.5 rounded-card hover:opacity-90">Login / Register</a>`;
+
+      function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+      }
+
+      document.getElementById('rangeForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const dailyCommute = document.getElementById('dailyCommute').value;
+        const drivingType = document.getElementById('drivingType').value;
+        const homeCharger = document.getElementById('homeCharger').value;
+        const loading = document.getElementById('loading');
+        const resultsSection = document.getElementById('resultsSection');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+
+        if (!dailyCommute || !drivingType || !homeCharger) {
+          errorText.textContent = 'Please fill in all required fields.';
+          errorMessage.style.display = 'block';
+          return;
+        }
+
+        errorMessage.style.display = 'none';
+        loading.style.display = 'block';
+        resultsSection.innerHTML = '';
+
+        try {
+          const response = await fetch('/api/range/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              dailyCommute: parseFloat(dailyCommute),
+              drivingType,
+              homeCharger
+            })
+          });
+
+          const data = await response.json();
+
+          if (!data.success) {
+            errorText.textContent = data.message || 'Something went wrong';
+            errorMessage.style.display = 'block';
+            return;
+          }
+
+          if (data.data.length === 0) {
+            resultsSection.innerHTML = `
+              <div class="bg-surface border border-line rounded-card p-12 text-center">
+                <p class="text-muted text-xl">No vehicles found matching your criteria.</p>
+              </div>
+            `;
+            return;
+          }
+
+          displayResults(data);
+
+        } catch (error) {
+          errorText.textContent = 'Failed to connect to server. Please try again.';
+          errorMessage.style.display = 'block';
+          console.error('Error:', error);
+        } finally {
+          loading.style.display = 'none';
+        }
+      });
+
+      function displayResults(data) {
+        const resultsSection = document.getElementById('resultsSection');
+        
+        let html = `
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-2xl font-display font-bold">📊 Results (${data.count} vehicles)</h2>
+            <span class="text-sm text-muted">${data.user_inputs.daily_commute}km · ${data.user_inputs.driving_type} · Charger: ${data.user_inputs.home_charger}</span>
+          </div>
+        `;
+        
+        data.data.forEach(vehicle => {
+          const statusClass = vehicle.suitability.toLowerCase().replace(' ', '-');
+          const statusEmoji = vehicle.status;
+          
+          const rangePercent = Math.min(100, Math.round((vehicle.range_km / 700) * 100));
+          
+          html += `
+            <div class="result-card ${statusClass} mb-4">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="text-xl font-display font-bold text-ink">
+                    ${vehicle.brand} ${vehicle.name}
+                    <span class="text-sm text-muted font-normal">(${vehicle.model || vehicle.category || ''})</span>
+                  </h3>
+                  <p class="text-sm text-muted">${vehicle.shape || ''} · ${vehicle.drive_type || ''}</p>
+                </div>
+                <span class="status-badge ${statusClass}">
+                  ${statusEmoji} ${vehicle.suitability}
+                </span>
+              </div>
+
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                <div class="bg-bg rounded-lg p-3 border border-line/50">
+                  <p class="text-xs text-muted uppercase">Price</p>
+                  <p class="text-sm font-semibold spec-mono">$${Number(vehicle.price).toLocaleString()}</p>
+                </div>
+                <div class="bg-bg rounded-lg p-3 border border-line/50">
+                  <p class="text-xs text-muted uppercase">EPA Range</p>
+                  <p class="text-sm font-semibold spec-mono">${vehicle.range_km} km</p>
+                </div>
+                <div class="bg-bg rounded-lg p-3 border border-line/50">
+                  <p class="text-xs text-muted uppercase">Winter Range</p>
+                  <p class="text-sm font-semibold spec-mono">${vehicle.winter_range} km</p>
+                </div>
+                <div class="bg-bg rounded-lg p-3 border border-line/50">
+                  <p class="text-xs text-muted uppercase">Charging</p>
+                  <p class="text-sm font-semibold spec-mono">${vehicle.charging_speed || 'N/A'}</p>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <div class="charge-bar-track">
+                  <div class="charge-bar-fill" style="width: ${rangePercent}%"></div>
+                </div>
+              </div>
+
+              <div class="mt-3 p-3 bg-bg rounded-lg border border-line/50">
+                <p class="text-sm"><span class="font-semibold text-accent">${vehicle.recommendation}</span></p>
+                <p class="text-sm text-muted">${vehicle.message}</p>
+              </div>
+            </div>
+          `;
+        });
+        
+        resultsSection.innerHTML = html;
+      }
+    </script>
 </body>
 </html>
