@@ -95,7 +95,7 @@
 
                 document.getElementById('checkoutForm').style.display = 'none';
 
-// Now do payment
+// Process payment
 const paymentRes = await fetch('/api/cart/payment', {
     method: 'POST',
     headers: {
@@ -111,9 +111,7 @@ const paymentRes = await fetch('/api/cart/payment', {
 const paymentData = await paymentRes.json();
 
 if (paymentRes.ok) {
-    // Fetch this order's items/details once - used for both the
-    // "View Order" toggle and the "Leave a review" links below.
-    // A failure here shouldn't hide the successful purchase message.
+    // Load order details
     let orderData = null;
     try {
         const orderRes = await fetch(`/api/cart/orders/${data.orderId}`, {

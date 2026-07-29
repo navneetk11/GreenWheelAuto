@@ -198,9 +198,7 @@
         });
     }
 
-    // ───────────────────────────────
-    // NEW: Reviews (average rating + list + leave-a-review form)
-    // ───────────────────────────────
+    // Reviews
     function renderStars(rating) {
         const rounded = Math.round(Number(rating));
         return '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
@@ -231,7 +229,7 @@
             `).join('')
             : '';
 
-        // Leave-a-review form only shows for logged in users, per the spec
+        
         const reviewFormHtml = token ? `
             <div class="mt-6">
                 <button id="toggleReviewFormBtn" onclick="toggleReviewForm()"
@@ -274,9 +272,7 @@
             </div>
         `;
 
-        // If the user arrived here right after completing an order
-        // (checkout.html links here with ?justOrdered=1), open the form
-        // automatically so they don't have to hunt for the button
+        // Open review form after checkout
         if (params.get('justOrdered') && token) {
             toggleReviewForm(true);
             document.getElementById('reviewForm')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
