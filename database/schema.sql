@@ -95,9 +95,10 @@ CREATE TABLE IF NOT EXISTS PO (
 -- PURCHASE ORDER ITEMS TABLE
 -- ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS POItem (
-    id      INT         NOT NULL,
-    vid     VARCHAR(20) NOT NULL,
-    price   INT         NOT NULL,
+    id       INT         NOT NULL,
+    vid      VARCHAR(20) NOT NULL,
+    price    INT         NOT NULL,
+    quantity INT         NOT NULL DEFAULT 1,
     PRIMARY KEY (id, vid),
     FOREIGN KEY (id)  REFERENCES PO(id),
     FOREIGN KEY (vid) REFERENCES Item(vid)

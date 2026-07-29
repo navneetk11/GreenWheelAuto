@@ -1,0 +1,541 @@
+{
+  "info": {
+    "_postman_id": "4192a316-5b81-4293-b57d-cda5ca700a89",
+    "name": "GreenWheelAuto-Cart Routes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Cart",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            { "key": "token", "value": "{{token}}", "type": "string" }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/cart",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "cart"]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Cart",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/cart",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "X-Powered-By", "value": "Express" },
+            { "key": "Access-Control-Allow-Origin", "value": "*" },
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"items\": [\n        {\n            \"cartItemId\": 1,\n            \"vid\": \"v001\",\n            \"quantity\": 1,\n            \"brand\": \"Tesla\",\n            \"model\": \"Model Y\",\n            \"price\": 67999,\n            \"stock\": 10\n        }\n    ],\n    \"total\": 67999\n}"
+        }
+      ]
+    },
+    {
+      "name": "Add To Cart",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            { "key": "token", "value": "{{token}}", "type": "string" }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"vehicleId\": \"{{vid}}\",\n    \"quantity\": 1\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/cart",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "cart"]
+        }
+      },
+      "response": [
+        {
+          "name": "Add To Cart",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"vehicleId\": \"v001\",\n    \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/cart",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart"]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "X-Powered-By", "value": "Express" },
+            { "key": "Access-Control-Allow-Origin", "value": "*" },
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"message\": \"Item added to cart\",\n    \"cartItemId\": 1\n}"
+        },
+        {
+          "name": "Add To Cart - Not Enough Stock",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"vehicleId\": \"v006\",\n    \"quantity\": 99\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/cart",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": \"Not enough stock available\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Cart Item",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            { "key": "token", "value": "{{token}}", "type": "string" }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"quantity\": 2\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/cart/{{cartItemId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "cart", "{{cartItemId}}"]
+        }
+      },
+      "response": [
+        {
+          "name": "Update Cart Item",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/cart/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart", "1"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"message\": \"Cart item updated\"\n}"
+        },
+        {
+          "name": "Update Cart Item - Not Found",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/cart/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart", "999"]
+            }
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": \"Cart item not found\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Remove Cart Item",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            { "key": "token", "value": "{{token}}", "type": "string" }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/cart/{{cartItemId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "cart", "{{cartItemId}}"]
+        }
+      },
+      "response": [
+        {
+          "name": "Remove Cart Item",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/cart/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart", "1"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"message\": \"Item removed from cart\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Checkout",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            { "key": "token", "value": "{{token}}", "type": "string" }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"street\": \"123 Main St\",\n    \"city\": \"Toronto\",\n    \"province\": \"ON\",\n    \"zip\": \"M1M 1M1\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/cart/checkout",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "cart", "checkout"]
+        }
+      },
+      "response": [
+        {
+          "name": "Checkout - Success",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"street\": \"123 Main St\",\n    \"city\": \"Toronto\",\n    \"province\": \"ON\",\n    \"zip\": \"M1M 1M1\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/cart/checkout",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart", "checkout"]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"message\": \"Checkout completed successfully\",\n    \"orderId\": 12,\n    \"total\": 67999\n}"
+        },
+        {
+          "name": "Checkout - Empty Cart",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"street\": \"123 Main St\",\n    \"city\": \"Toronto\",\n    \"province\": \"ON\",\n    \"zip\": \"M1M 1M1\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/cart/checkout",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart", "checkout"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": \"Cart is empty\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Process Payment (2/3 rule)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            { "key": "token", "value": "{{token}}", "type": "string" }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"orderId\": {{orderId}},\n    \"paymentMethod\": \"card\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/cart/payment",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "cart", "payment"]
+        }
+      },
+      "response": [
+        {
+          "name": "Payment - Approved",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"orderId\": 12,\n    \"paymentMethod\": \"card\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/cart/payment",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart", "payment"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"message\": \"Order Successfully Completed!\",\n    \"orderId\": 12\n}"
+        },
+        {
+          "name": "Payment - Denied (every 3rd attempt)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"orderId\": 13,\n    \"paymentMethod\": \"card\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/cart/payment",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart", "payment"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"message\": \"Credit Card Authorization Failed.\",\n    \"orderId\": 13\n}"
+        },
+        {
+          "name": "Payment - Already Paid",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"orderId\": 12,\n    \"paymentMethod\": \"card\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/cart/payment",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart", "payment"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": \"Order already paid\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Order",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            { "key": "token", "value": "{{token}}", "type": "string" }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/cart/orders/{{orderId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "cart", "orders", "{{orderId}}"]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Order",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/cart/orders/12",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart", "orders", "12"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"order\": {\n        \"id\": 12,\n        \"user_id\": 1,\n        \"fname\": \"Test\",\n        \"lname\": \"User\",\n        \"status\": \"PROCESSED\",\n        \"address_id\": 3,\n        \"total_price\": 67999,\n        \"created_at\": \"2026-07-12T01:30:00.000Z\"\n    },\n    \"items\": [\n        {\n            \"id\": 12,\n            \"vid\": \"v001\",\n            \"price\": 67999,\n            \"brand\": \"Tesla\",\n            \"model\": \"Model Y\"\n        }\n    ]\n}"
+        },
+        {
+          "name": "Get Order - Not Found",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/cart/orders/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "cart", "orders", "999"]
+            }
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": null,
+          "header": [
+            { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": \"Order not found\"\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "token", "value": "PASTE_JWT_TOKEN_HERE" },
+    { "key": "vid", "value": "v001" },
+    { "key": "cartItemId", "value": "1" },
+    { "key": "orderId", "value": "12" }
+  ]
+}
