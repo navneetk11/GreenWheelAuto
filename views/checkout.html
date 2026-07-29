@@ -111,15 +111,67 @@ const paymentRes = await fetch('/api/cart/payment', {
 const paymentData = await paymentRes.json();
 
 if (paymentRes.ok) {
+    // Fetch this order's items/details once - used for both the
+    // "View Order" toggle and the "Leave a review" links below.
+    // A failure here shouldn't hide the successful purchase message.
+    let orderData = null;
+    try {
+        const orderRes = await fetch(`/api/cart/orders/${data.orderId}`, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const parsed = await orderRes.json();
+        if (orderRes.ok) {
+            orderData = parsed;
+        }
+    } catch (err) {
+        console.log(err);
+    }
+
+    let reviewLinksHtml = '';
+    let orderDetailsHtml = '';
+
+    if (orderData && orderData.items && orderData.items.length) {
+        reviewLinksHtml = `
+            <p style="margin-top:16px;">Leave a review:</p>
+            <ul>
+                ${orderData.items.map(item => `
+                    <li>
+                        <a href="vehicle-detail.html?vid=${item.vid}&justOrdered=1">
+                            ${item.brand} ${item.model}
+                        </a>
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+
+        orderDetailsHtml = `
+            <div id="orderDetails" style="display:none; margin-top:16px; border:1px solid #ccc; padding:10px;">
+                <h3>Order Details</h3>
+                <p>Status: ${orderData.order.status}</p>
+                <ul>
+                    ${orderData.items.map(item => `
+                        <li>${item.brand} ${item.model} — $${item.price}</li>
+                    `).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
     document.getElementById('resultMessage').innerHTML = `
         <h2> ${paymentData.message}</h2>
         <p>Order #${data.orderId} | Total: $${data.total}</p>
+        <button type="button" onclick="
+            var d = document.getElementById('orderDetails');
+            if (d) { d.style.display = (d.style.display === 'none') ? 'block' : 'none'; }
+        ">
+            View Order
+        </button>
+        ${orderDetailsHtml}
+        ${reviewLinksHtml}
         <br>
         <button onclick="window.location.href='catalogue.html'">
             Continue Shopping
-        </button>
-        <button onclick="logout()">Logout</button>
-    `;
+        </button>`;
 } else {
     document.getElementById('resultMessage').innerHTML = `
         <h2> ${paymentData.message}</h2>
@@ -141,11 +193,6 @@ if (paymentRes.ok) {
             }
 
         });
-function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = 'login.html';
-}
 
     </script>
 

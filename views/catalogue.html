@@ -275,21 +275,14 @@
     loadAllVehicles();
     loadHotDeals();
 
-    // ---- auth state + logout ----
+    // ---- auth state ----
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     const authArea = document.getElementById('nav-auth-area');
     authArea.innerHTML = user
       ? `<div class="flex items-center gap-3">
            <span class="text-muted">Welcome, ${user.fname}!</span>
-           <button onclick="logout()" class="text-circuit hover:underline">Sign out</button>
-         </div>`
+        </div>`
       : `<a href="/login.html" class="bg-accent text-bg font-medium px-4 py-1.5 rounded-card hover:opacity-90">Login / Register</a>`;
-
-    function logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = 'login.html';
-    }
   </script>
 </body>
 </html>

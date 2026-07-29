@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const reviewRoutes = require('./routes/reviewRoutes');
 require('dotenv').config();
 
 const app = express();
@@ -8,12 +9,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'views')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 // Routes
 app.use('/api/vehicles', require('./routes/vehicleRoutes'));
 app.use('/api/auth',     require('./routes/authRoutes'));
 app.use('/api/cart',     require('./routes/cartRoutes'));
 app.use('/api/range',    require('./routes/rangeRoutes'));
+app.use('/api/reviews', reviewRoutes);
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'catalogue.html'));

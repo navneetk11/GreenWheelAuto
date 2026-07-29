@@ -75,10 +75,15 @@
 </a>
     <div id="cart-message"></div>
     <div id="vehicle-detail"></div>
+
+    <!-- NEW: reviews section, rendered separately from vehicle-detail so
+         re-fetching reviews doesn't require re-rendering the vehicle info -->
+    <div id="reviews-section" class="mt-8"></div>
   </div>
 
   <script>
     const API = 'http://localhost:5000/api/vehicles';
+    const REVIEWS_API = 'http://localhost:5000/api/reviews';
 
     const params = new URLSearchParams(window.location.search);
     const vid = params.get('vid');
@@ -193,6 +198,145 @@
         });
     }
 
+    // ───────────────────────────────
+    // NEW: Reviews (average rating + list + leave-a-review form)
+    // ───────────────────────────────
+    function renderStars(rating) {
+        const rounded = Math.round(Number(rating));
+        return '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
+    }
+
+    async function loadReviews() {
+        if (!vid) return;
+
+        const res = await fetch(`${REVIEWS_API}/${vid}`);
+        const data = await res.json();
+        const token = localStorage.getItem('token');
+
+        const avgDisplay = data.average
+            ? `<span class="text-accent text-lg">${renderStars(data.average)}</span>
+               <span class="spec-mono text-sm text-muted ml-2">${data.average} / 5 (${data.count} review${data.count === 1 ? '' : 's'})</span>`
+            : `<span class="text-muted text-sm">No reviews yet — be the first.</span>`;
+
+        const reviewsHtml = data.reviews.length
+            ? data.reviews.map(r => `
+                <div class="border-b border-line py-4 last:border-0">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-medium text-ink">${r.fname} ${r.lname}</span>
+                        <span class="text-accent text-sm">${renderStars(r.rating)}</span>
+                    </div>
+                    <p class="text-xs text-muted mb-1.5">${new Date(r.created_at).toLocaleDateString()}</p>
+                    <p class="text-sm text-ink">${r.comment}</p>
+                </div>
+            `).join('')
+            : '';
+
+        // Leave-a-review form only shows for logged in users, per the spec
+        const reviewFormHtml = token ? `
+            <div class="mt-6">
+                <button id="toggleReviewFormBtn" onclick="toggleReviewForm()"
+                    class="border border-line px-4 py-2 rounded-card text-sm text-muted hover:text-ink hover:border-accent transition-colors">
+                    Leave a Review
+                </button>
+                <form id="reviewForm" class="hidden mt-4 bg-bg border border-line rounded-card p-5" onsubmit="submitReview(event)">
+                    <label class="block text-sm text-muted mb-1">Your rating</label>
+                    <select id="reviewRating" required
+                        class="bg-surface border border-line rounded px-3 py-1.5 text-sm text-ink mb-3 focus:outline-none focus:border-accent">
+                        <option value="">Select...</option>
+                        <option value="5">★★★★★ (5)</option>
+                        <option value="4">★★★★☆ (4)</option>
+                        <option value="3">★★★☆☆ (3)</option>
+                        <option value="2">★★☆☆☆ (2)</option>
+                        <option value="1">★☆☆☆☆ (1)</option>
+                    </select><br>
+                    <label class="block text-sm text-muted mb-1">Your review</label>
+                    <textarea id="reviewComment" required rows="3"
+                        class="w-full bg-surface border border-line rounded px-3 py-2 text-sm text-ink mb-3 focus:outline-none focus:border-accent"
+                        placeholder="What did you think of this vehicle?"></textarea><br>
+                    <button type="submit" class="bg-accent text-bg font-semibold px-5 py-2 rounded-card hover:opacity-90 transition-opacity">
+                        Submit Review
+                    </button>
+                    <span id="reviewFormMessage" class="text-sm ml-3"></span>
+                </form>
+            </div>
+        ` : `
+            <p class="text-sm text-muted mt-6">
+                <a href="login.html" class="text-circuit hover:underline">Log in</a> to leave a review.
+            </p>
+        `;
+
+        document.getElementById('reviews-section').innerHTML = `
+            <div class="bg-surface border border-line rounded-card p-6">
+                <h2 class="text-xl font-display font-bold mb-2">Reviews</h2>
+                <div class="mb-4">${avgDisplay}</div>
+                <div>${reviewsHtml}</div>
+                ${reviewFormHtml}
+            </div>
+        `;
+
+        // If the user arrived here right after completing an order
+        // (checkout.html links here with ?justOrdered=1), open the form
+        // automatically so they don't have to hunt for the button
+        if (params.get('justOrdered') && token) {
+            toggleReviewForm(true);
+            document.getElementById('reviewForm')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function toggleReviewForm(forceOpen) {
+        const form = document.getElementById('reviewForm');
+        if (!form) return;
+        if (forceOpen) {
+            form.classList.remove('hidden');
+        } else {
+            form.classList.toggle('hidden');
+        }
+    }
+
+    async function submitReview(event) {
+        event.preventDefault();
+        const token = localStorage.getItem('token');
+        const rating = document.getElementById('reviewRating').value;
+        const comment = document.getElementById('reviewComment').value;
+        const msgEl = document.getElementById('reviewFormMessage');
+
+        if (!rating) {
+            msgEl.textContent = 'Please select a rating.';
+            msgEl.className = 'text-sm ml-3 text-red-400';
+            return;
+        }
+
+        try {
+            const res = await fetch(REVIEWS_API, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ vid, rating: Number(rating), comment })
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                msgEl.textContent = data.error || 'Could not submit review.';
+                msgEl.className = 'text-sm ml-3 text-red-400';
+                return;
+            }
+
+            msgEl.textContent = 'Thanks for your review!';
+            msgEl.className = 'text-sm ml-3 text-accent';
+            document.getElementById('reviewComment').value = '';
+            document.getElementById('reviewRating').value = '';
+
+            // reload so the new review appears immediately, per the spec
+            loadReviews();
+        } catch (err) {
+            console.log(err);
+            msgEl.textContent = 'Something went wrong submitting your review.';
+            msgEl.className = 'text-sm ml-3 text-red-400';
+        }
+    }
+
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     const authArea = document.getElementById('nav-auth-area');
     authArea.innerHTML = user
@@ -209,6 +353,7 @@
     }
 
     loadVehicle();
+    loadReviews();
   </script>
 </body>
 </html>
