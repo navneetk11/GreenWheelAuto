@@ -7,15 +7,17 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(express.static(path.join(__dirname, 'views')));
 
 // Routes
 app.use('/api/vehicles', require('./routes/vehicleRoutes'));
-app.use('/api/auth',     require('./routes/authRoutes'));
-app.use('/api/cart',     require('./routes/cartRoutes'));
-app.use('/api/range',    require('./routes/rangeRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/cart', require('./routes/cartRoutes'));
+app.use('/api/range', require('./routes/rangeRoutes'));
 
-// Test route
 app.get('/', (req, res) => {
     res.json({ message: 'GreenWheel Auto API is running!' });
 });
