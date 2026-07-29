@@ -17,6 +17,7 @@ app.use('/api/vehicles', require('./routes/vehicleRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/cart', require('./routes/cartRoutes'));
 app.use('/api/range', require('./routes/rangeRoutes'));
+app.use('/api/chatbot', require('./routes/chatbotRoutes'));  // ← ADD THIS
 
 app.get('/', (req, res) => {
     res.json({ message: 'GreenWheel Auto API is running!' });
