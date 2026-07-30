@@ -302,7 +302,7 @@
         
         data.data.forEach(vehicle => {
           const statusClass = vehicle.suitability.toLowerCase().replace(' ', '-');
-          const statusEmoji = vehicle.status;
+          const statusEmoji =  { suitable: '✅', borderline: '⚠️', 'not-recommended': '❌' }[statusClass] || '';
           
           const rangePercent = Math.min(100, Math.round((vehicle.range_km / 700) * 100));
           
