@@ -142,7 +142,7 @@ INSERT INTO Item (vid, name, description, brand, model, year, shape, condition_t
 ('v006', 'Rivian R1T', 'Electric adventure truck', 'Rivian', 'R1T', 2022, 'Truck', 'Used', 18000, 72000, 3, 505, 390, 'Forest Green', 'Black', 'Vegan Leather', 'Fast', 'AWD', TRUE, FALSE, FALSE),
 ('v007', 'Ford Mustang Mach-E', 'Electric muscle SUV', 'Ford', 'Mustang Mach-E', 2023, 'SUV', 'New', 0, 58000, 6, 490, 375, 'Rapid Red', 'Black', 'Cloth', 'Fast', 'AWD', FALSE, FALSE, TRUE),
 ('v008', 'Chevrolet Equinox EV', 'Affordable family SUV', 'Chevrolet', 'Equinox EV', 2024, 'SUV', 'New', 0, 43000, 12, 483, 370, 'Black', 'Gray', 'Cloth', 'Standard', 'FWD', FALSE, FALSE, FALSE),
-('v009', 'Audi Q8 e-tron', 'Premium electric SUV', 'Audi', 'Q8 e-tron', 2023, 'SUV',
+('v009', 'Audi Q8 e-tron', 'Premium electric SUV', 'Audi', 'Q8 e-tron', 2023, 'SUV', 'New', 0, 89000, 4, 582, 448, 'Black', 'Beige', 'Leather', 'Fast', 'AWD', FALSE, FALSE, FALSE),
 ('v010', 'Nissan Ariya', 'Stylish crossover EV', 'Nissan', 'Ariya', 2023, 'SUV', 'New', 0, 47000, 7, 402, 310, 'Warm Silver', 'Black', 'Cloth', 'Standard', 'FWD', FALSE, FALSE, FALSE);
 
 -- ─────────────────────────────────────────
