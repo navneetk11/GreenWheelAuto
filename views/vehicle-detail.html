@@ -83,9 +83,8 @@
   </div>
 
   <script>
-    const API = 'http://localhost:5000/api/vehicles';
-    const REVIEWS_API = 'http://localhost:5000/api/reviews';
-
+    const API = '/api/vehicles';
+    const REVIEWS_API = '/api/reviews';
     const params = new URLSearchParams(window.location.search);
     const vid = params.get('vid');
 
@@ -168,7 +167,7 @@
             return;
         }
 
-        fetch('http://localhost:5000/api/cart', {
+        fetch('/api/cart', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
