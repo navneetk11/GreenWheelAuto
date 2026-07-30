@@ -274,8 +274,7 @@
 
     loadAllVehicles();
     loadHotDeals();
-
-    // ---- auth state + logout ----
+// ---- auth state + logout ----
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     const authArea = document.getElementById('nav-auth-area');
     authArea.innerHTML = user
@@ -290,6 +289,7 @@
         localStorage.removeItem('user');
         window.location.href = 'login.html';
     }
+
   </script>
 
 <script src="/chatbot.js"></script>
