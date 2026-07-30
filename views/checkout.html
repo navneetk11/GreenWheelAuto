@@ -4,196 +4,581 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>GreenWheel Auto - Checkout</title>
-</head>
 
-<body>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    <h1>Checkout</h1>
-
-    <p>Please review your information below to complete your purchase.</p>
-
-    <form id="checkoutForm">
-
-        <h2>Shipping Information</h2>
-
-        <label for="street">Street Address</label><br>
-        <input type="text" id="street" required><br><br>
-
-        <label for="city">City</label><br>
-        <input type="text" id="city" required><br><br>
-
-        <label for="province">Province</label><br>
-        <input type="text" id="province" required><br><br>
-
-        <label for="zip">Postal Code</label><br>
-        <input type="text" id="zip" required><br><br>
-
-        <h2>Payment Information</h2>
-
-        <label for="cardNumber">Card Number</label><br>
-        <input type="text" id="cardNumber" required><br><br>
-
-        <label for="expiry">Expiry Date (MM/YY)</label><br>
-        <input type="text" id="expiry" placeholder="MM/YY" required><br><br>
-
-        <label for="cvv">CVV</label><br>
-        <input type="text" id="cvv" required><br><br>
-
-        <button type="submit">Place Order</button>
-
-    </form>
-
-    <p id="resultMessage"></p>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap"
+        rel="stylesheet"
+    >
 
     <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: "#0B0D0C",
+                        surface: "#16191A",
+                        ink: "#F5F6F2",
+                        accent: "#C4F135",
+                        circuit: "#4FD1E8",
+                        line: "#2A2D2A",
+                        muted: "#9AA39C"
+                    },
+                    fontFamily: {
+                        display: ["'Space Grotesk'", "sans-serif"],
+                        body: ["'Inter'", "sans-serif"],
+                        mono: ["'IBM Plex Mono'", "monospace"]
+                    },
+                    borderRadius: {
+                        card: "1rem"
+                    }
+                }
+            }
+        };
+    </script>
 
+    <style>
+        .bg-decor {
+            position: fixed;
+            inset: 0;
+            z-index: -10;
+            background-image: url('/images/bg.png');
+            background-size: cover;
+            background-position: center;
+            filter: blur(15px);
+            transform: scale(1.05);
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        .bg-decor-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -9;
+            background: rgba(10, 5, 12, 0.75);
+            pointer-events: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0B0D0C;
+            color: #F5F6F2;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        input {
+            width: 100%;
+            background-color: #0B0D0C;
+            border: 1px solid #2A2D2A;
+            border-radius: 0.65rem;
+            padding: 0.75rem 0.9rem;
+            color: #F5F6F2;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #C4F135;
+            box-shadow: 0 0 0 2px rgba(196, 241, 53, 0.15);
+        }
+
+        input::placeholder {
+            color: #6f7871;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #9AA39C;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        #resultMessage:empty {
+            display: none;
+        }
+
+        #resultMessage a {
+            color: #4FD1E8;
+        }
+
+        #resultMessage a:hover {
+            text-decoration: underline;
+        }
+
+        #resultMessage ul {
+            margin-top: 0.75rem;
+        }
+
+        #resultMessage li {
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body class="bg-bg text-ink font-body min-h-screen">
+
+    <div class="bg-decor"></div>
+    <div class="bg-decor-overlay"></div>
+
+    <header class="sticky top-0 z-50 py-2 px-4 bg-bg/60 backdrop-blur-sm">
+        <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+
+            <a href="/catalogue.html" class="flex items-center shrink-0">
+                <img
+                    src="/images/logo.png"
+                    alt="GreenWheel Auto"
+                    class="h-20 sm:h-24 w-auto"
+                >
+            </a>
+
+            <nav
+                class="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5"
+            >
+                <a
+                    href="/catalogue.html"
+                    class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors"
+                >
+                    Browse
+                </a>
+
+                <a
+                    href="/range-checker.html"
+                    class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors"
+                >
+                    Range Checker
+                </a>
+
+                <a
+                    href="/cart.html"
+                    class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors"
+                >
+                    Cart
+                </a>
+            </nav>
+
+            <a
+                href="/cart.html"
+                class="text-sm text-circuit hover:underline shrink-0"
+            >
+                Back to cart
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+
+        <div
+            class="bg-surface/90 backdrop-blur-xl border border-white/10 rounded-card shadow-2xl overflow-hidden"
+        >
+            <div class="border-b border-line px-6 sm:px-8 py-6">
+                <p class="font-mono text-xs uppercase tracking-widest text-circuit mb-2">
+                    Secure checkout
+                </p>
+
+                <h1 class="text-3xl sm:text-4xl font-display font-bold">
+                    Checkout
+                </h1>
+
+                <p class="text-muted mt-2">
+                    Please review your information below to complete your purchase.
+                </p>
+            </div>
+
+            <form id="checkoutForm" class="px-6 sm:px-8 py-7">
+
+                <section>
+                    <div class="flex items-center gap-3 mb-5">
+                        <div
+                            class="w-8 h-8 rounded-full bg-accent text-bg font-semibold flex items-center justify-center"
+                        >
+                            1
+                        </div>
+
+                        <h2 class="text-xl font-display font-semibold">
+                            Shipping Information
+                        </h2>
+                    </div>
+
+                    <div class="space-y-4">
+
+                        <div>
+                            <label for="street">Street Address</label>
+                            <input
+                                type="text"
+                                id="street"
+                                autocomplete="street-address"
+                                required
+                            >
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="city">City</label>
+                                <input
+                                    type="text"
+                                    id="city"
+                                    autocomplete="address-level2"
+                                    required
+                                >
+                            </div>
+
+                            <div>
+                                <label for="province">Province</label>
+                                <input
+                                    type="text"
+                                    id="province"
+                                    autocomplete="address-level1"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="zip">Postal Code</label>
+                            <input
+                                type="text"
+                                id="zip"
+                                autocomplete="postal-code"
+                                required
+                            >
+                        </div>
+                    </div>
+                </section>
+
+                <div class="border-t border-line my-8"></div>
+
+                <section>
+                    <div class="flex items-center gap-3 mb-5">
+                        <div
+                            class="w-8 h-8 rounded-full bg-circuit text-bg font-semibold flex items-center justify-center"
+                        >
+                            2
+                        </div>
+
+                        <h2 class="text-xl font-display font-semibold">
+                            Payment Information
+                        </h2>
+                    </div>
+
+                    <div class="space-y-4">
+
+                        <div>
+                            <label for="cardNumber">Card Number</label>
+                            <input
+                                type="text"
+                                id="cardNumber"
+                                inputmode="numeric"
+                                autocomplete="cc-number"
+                                placeholder="1234 5678 9012 3456"
+                                required
+                            >
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="expiry">Expiry Date</label>
+                                <input
+                                    type="text"
+                                    id="expiry"
+                                    placeholder="MM/YY"
+                                    autocomplete="cc-exp"
+                                    required
+                                >
+                            </div>
+
+                            <div>
+                                <label for="cvv">CVV</label>
+                                <input
+                                    type="text"
+                                    id="cvv"
+                                    inputmode="numeric"
+                                    autocomplete="cc-csc"
+                                    placeholder="123"
+                                    required
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <button
+                    type="submit"
+                    class="w-full mt-8 bg-accent text-bg font-semibold px-6 py-3 rounded-card hover:opacity-90 transition-opacity"
+                >
+                    Place Order
+                </button>
+
+                <p class="text-xs text-muted text-center mt-4">
+                    Your order will be processed securely.
+                </p>
+            </form>
+        </div>
+
+        <div
+            id="resultMessage"
+            class="mt-6 bg-surface/90 backdrop-blur-xl border border-white/10 rounded-card p-6"
+        ></div>
+    </main>
+
+    <script>
         function getToken() {
             return localStorage.getItem('token');
         }
 
-        document.getElementById('checkoutForm').addEventListener('submit', async function (e) {
+        document.getElementById('checkoutForm').addEventListener(
+            'submit',
+            async function (e) {
+                e.preventDefault();
 
-            e.preventDefault();
+                const token = getToken();
+                const resultMessage =
+                    document.getElementById('resultMessage');
 
-            const token = getToken();
-
-            if (!token) {
-                document.getElementById('resultMessage').textContent =
-                    'Please log in before checking out.';
-                return;
-            }
-
-            const body = {
-                street: document.getElementById('street').value,
-                city: document.getElementById('city').value,
-                province: document.getElementById('province').value,
-                zip: document.getElementById('zip').value,
-                cardNumber: document.getElementById('cardNumber').value,
-                expiry: document.getElementById('expiry').value,
-                cvv: document.getElementById('cvv').value
-            };
-
-            try {
-
-                const res = await fetch('/api/cart/checkout', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(body)
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    document.getElementById('resultMessage').textContent =
-                        data.error || 'Checkout could not be completed.';
+                if (!token) {
+                    resultMessage.textContent =
+                        'Please log in before checking out.';
                     return;
                 }
 
-                document.getElementById('checkoutForm').style.display = 'none';
+                const body = {
+                    street: document.getElementById('street').value,
+                    city: document.getElementById('city').value,
+                    province: document.getElementById('province').value,
+                    zip: document.getElementById('zip').value,
+                    cardNumber: document.getElementById('cardNumber').value,
+                    expiry: document.getElementById('expiry').value,
+                    cvv: document.getElementById('cvv').value
+                };
 
-// Process payment
-const paymentRes = await fetch('/api/cart/payment', {
-    method: 'POST',
-    headers: {
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        orderId: data.orderId,
-        paymentMethod: 'credit_card'
-    })
-});
+                try {
+                    const res = await fetch('/api/cart/checkout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(body)
+                    });
 
-const paymentData = await paymentRes.json();
+                    const data = await res.json();
 
-if (paymentRes.ok) {
-    // Load order details
-    let orderData = null;
-    try {
-        const orderRes = await fetch(`/api/cart/orders/${data.orderId}`, {
-            headers: { 'Authorization': 'Bearer ' + token }
-        });
-        const parsed = await orderRes.json();
-        if (orderRes.ok) {
-            orderData = parsed;
-        }
-    } catch (err) {
-        console.log(err);
-    }
+                    if (!res.ok) {
+                        resultMessage.textContent =
+                            data.error || 'Checkout could not be completed.';
+                        return;
+                    }
 
-    let reviewLinksHtml = '';
-    let orderDetailsHtml = '';
+                    document.getElementById('checkoutForm').style.display =
+                        'none';
 
-    if (orderData && orderData.items && orderData.items.length) {
-        reviewLinksHtml = `
-            <p style="margin-top:16px;">Leave a review:</p>
-            <ul>
-                ${orderData.items.map(item => `
-                    <li>
-                        <a href="vehicle-detail.html?vid=${item.vid}&justOrdered=1">
-                            ${item.brand} ${item.model}
-                        </a>
-                    </li>
-                `).join('')}
-            </ul>
-        `;
+                    // Process payment
+                    const paymentRes = await fetch('/api/cart/payment', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            orderId: data.orderId,
+                            paymentMethod: 'credit_card'
+                        })
+                    });
 
-        orderDetailsHtml = `
-            <div id="orderDetails" style="display:none; margin-top:16px; border:1px solid #ccc; padding:10px;">
-                <h3>Order Details</h3>
-                <p>Status: ${orderData.order.status}</p>
-                <ul>
-                    ${orderData.items.map(item => `
-                        <li>${item.brand} ${item.model} — $${item.price}</li>
-                    `).join('')}
-                </ul>
-            </div>
-        `;
-    }
+                    const paymentData = await paymentRes.json();
 
-    document.getElementById('resultMessage').innerHTML = `
-        <h2> ${paymentData.message}</h2>
-        <p>Order #${data.orderId} | Total: $${data.total}</p>
-        <button type="button" onclick="
-            var d = document.getElementById('orderDetails');
-            if (d) { d.style.display = (d.style.display === 'none') ? 'block' : 'none'; }
-        ">
-            View Order
-        </button>
-        ${orderDetailsHtml}
-        ${reviewLinksHtml}
-        <br>
-        <button onclick="window.location.href='catalogue.html'">
-            Continue Shopping
-        </button>`;
-} else {
-    document.getElementById('resultMessage').innerHTML = `
-        <h2> ${paymentData.message}</h2>
-        <p>Please try again with a different card.</p>
-        <br>
-        <button onclick="window.location.reload()">Try Again</button>
-        <button onclick="window.location.href='catalogue.html'">
-            Continue Shopping
-        </button>
-    `;
-}
+                    if (paymentRes.ok) {
+                        // Load order details
+                        let orderData = null;
 
-            } catch (err) {
+                        try {
+                            const orderRes = await fetch(
+                                `/api/cart/orders/${data.orderId}`,
+                                {
+                                    headers: {
+                                        'Authorization': 'Bearer ' + token
+                                    }
+                                }
+                            );
 
-                console.log(err);
+                            const parsed = await orderRes.json();
 
-                document.getElementById('resultMessage').textContent =
-                    'Something went wrong while processing your order. Please try again.';
+                            if (orderRes.ok) {
+                                orderData = parsed;
+                            }
+                        } catch (err) {
+                            console.log(err);
+                        }
+
+                        let reviewLinksHtml = '';
+                        let orderDetailsHtml = '';
+
+                        if (
+                            orderData &&
+                            orderData.items &&
+                            orderData.items.length
+                        ) {
+                            reviewLinksHtml = `
+                                <div class="mt-6 border-t border-line pt-5">
+                                    <h3 class="font-display font-semibold mb-3">
+                                        Leave a review
+                                    </h3>
+
+                                    <ul class="space-y-2">
+                                        ${orderData.items.map(item => `
+                                            <li>
+                                                <a
+                                                    href="vehicle-detail.html?vid=${item.vid}&justOrdered=1"
+                                                    class="inline-flex items-center gap-2 text-circuit hover:underline"
+                                                >
+                                                    Review ${item.brand} ${item.model}
+                                                    <span>→</span>
+                                                </a>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            `;
+
+                            orderDetailsHtml = `
+                                <div
+                                    id="orderDetails"
+                                    class="hidden mt-5 bg-bg border border-line rounded-card p-5"
+                                >
+                                    <h3 class="font-display font-semibold mb-3">
+                                        Order Details
+                                    </h3>
+
+                                    <p class="text-sm text-muted mb-3">
+                                        Status:
+                                        <span class="text-accent">
+                                            ${orderData.order.status}
+                                        </span>
+                                    </p>
+
+                                    <ul class="space-y-2">
+                                        ${orderData.items.map(item => `
+                                            <li class="flex justify-between gap-4 text-sm border-b border-line pb-2 last:border-0">
+                                                <span>
+                                                    ${item.brand} ${item.model}
+                                                </span>
+
+                                                <span class="font-mono text-circuit">
+                                                    $${Number(item.price).toLocaleString('en-CA')}
+                                                </span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            `;
+                        }
+
+                        resultMessage.innerHTML = `
+                            <div>
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-accent/15 text-accent flex items-center justify-center text-xl"
+                                    >
+                                        ✓
+                                    </div>
+
+                                    <h2 class="text-2xl font-display font-bold">
+                                        ${paymentData.message}
+                                    </h2>
+                                </div>
+
+                                <p class="text-muted">
+                                    Order
+                                    <span class="font-mono text-ink">
+                                        #${data.orderId}
+                                    </span>
+                                    <span class="mx-2">|</span>
+                                    Total:
+                                    <span class="font-mono text-accent">
+                                        $${Number(data.total).toLocaleString('en-CA')}
+                                    </span>
+                                </p>
+
+                                <div class="flex flex-wrap gap-3 mt-5">
+                                    <button
+                                        type="button"
+                                        onclick="
+                                            var details =
+                                                document.getElementById('orderDetails');
+
+                                            if (details) {
+                                                details.classList.toggle('hidden');
+                                            }
+                                        "
+                                        class="border border-line text-muted px-4 py-2 rounded-card hover:text-ink hover:border-accent transition-colors"
+                                    >
+                                        View Order
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onclick="window.location.href='catalogue.html'"
+                                        class="bg-accent text-bg font-semibold px-4 py-2 rounded-card hover:opacity-90 transition-opacity"
+                                    >
+                                        Continue Shopping
+                                    </button>
+                                </div>
+
+                                ${orderDetailsHtml}
+                                ${reviewLinksHtml}
+                            </div>
+                        `;
+                    } else {
+                        resultMessage.innerHTML = `
+                            <div>
+                                <h2 class="text-2xl font-display font-bold text-red-400 mb-2">
+                                    ${paymentData.message}
+                                </h2>
+
+                                <p class="text-muted">
+                                    Please try again with a different card.
+                                </p>
+
+                                <div class="flex flex-wrap gap-3 mt-5">
+                                    <button
+                                        type="button"
+                                        onclick="window.location.reload()"
+                                        class="bg-accent text-bg font-semibold px-4 py-2 rounded-card hover:opacity-90 transition-opacity"
+                                    >
+                                        Try Again
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onclick="window.location.href='catalogue.html'"
+                                        class="border border-line text-muted px-4 py-2 rounded-card hover:text-ink hover:border-accent transition-colors"
+                                    >
+                                        Continue Shopping
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } catch (err) {
+                    console.log(err);
+
+                    resultMessage.textContent =
+                        'Something went wrong while processing your order. Please try again.';
+                }
             }
-
-        });
-
+        );
     </script>
 
+    <script src="/chatbot.js"></script>
 </body>
 
 </html>
