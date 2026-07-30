@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GreenWheel Auto - Loan Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              bg: "#0B0D0C",
+              surface: "#16191A",
+              ink: "#F5F6F2",
+              accent: "#C4F135",
+              circuit: "#4FD1E8",
+              line: "#2A2D2A",
+              muted: "#9AA39C",
+            },
+            fontFamily: {
+              display: ["'Space Grotesk'", "sans-serif"],
+              body: ["'Inter'", "sans-serif"],
+              mono: ["'IBM Plex Mono'", "monospace"],
+            },
+            borderRadius: { card: "1rem" },
+          },
+        },
+      };
+    </script>
+    <style>
+      .bg-decor {
+        position: fixed;
+        inset: 0;
+        z-index: -10;
+        background-image: url('/images/bg.png');
+        background-size: cover;
+        background-position: center;
+        filter: blur(15px);
+        transform: scale(1.05);
+        opacity: 1;
+        pointer-events: none;
+      }
+      .bg-decor-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: -9;
+        background: rgba(10, 5, 12, 0.75);
+        pointer-events: none;
+      }
+
+      body { font-family: 'Inter', sans-serif; background-color: #0B0D0C; color: #F5F6F2; }
+      h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+      .spec-mono { font-family: 'IBM Plex Mono', monospace; }
+      .hero-glow { background: radial-gradient(60% 60% at 50% 0%, rgba(196,241,53,0.10), transparent 70%); }
+      ::-webkit-scrollbar { height: 8px; }
+      ::-webkit-scrollbar-thumb { background: #2A2D2A; border-radius: 8px; }
+
+      input, select {
+        background-color: #0B0D0C;
+        border: 1px solid #2A2D2A;
+        color: #F5F6F2;
+      }
+      input:focus, select:focus {
+        outline: none;
+        border-color: #C4F135;
+      }
+      input::placeholder { color: #6B7280; }
+      select option { color: #F5F6F2; background-color: #0B0D0C; }
+
+      .btn-calculate {
+        background-color: #C4F135;
+        color: #0B0D0C;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 1rem;
+        transition: opacity 0.2s;
+        border: none;
+        width: 100%;
+        font-size: 1.125rem;
+        cursor: pointer;
+      }
+      .btn-calculate:hover { opacity: 0.85; }
+
+      .result-stat {
+        background: #0B0D0C;
+        border: 1px solid #2A2D2A;
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+      }
+    </style>
+</head>
+<body class="bg-bg text-ink font-body">
+    <div class="bg-decor"></div>
+    <div class="bg-decor-overlay"></div>
+
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-50 pt-3 pb-3 px-2 sm:px-4 bg-bg/60 backdrop-blur-sm">
+      <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+        <a href="/catalogue.html" class="flex items-center shrink-0 -ml-1">
+          <img src="/images/logo.png" alt="GreenWheel Auto" class="h-24 w-auto" />
+        </a>
+        <nav class="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5">
+          <a href="/catalogue.html" class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors">Browse</a>
+          <a href="/range-checker.html" class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors">Range Checker</a>
+          <a href="/loan-calculator.html" class="px-4 py-2 rounded-full text-sm font-medium bg-accent/15 text-accent">Loan Calculator</a>
+          <a href="/cart.html" class="px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-ink hover:bg-white/5 transition-colors">Cart</a>
+        </nav>
+        <div id="nav-auth-area" class="shrink-0 text-sm"></div>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero-glow border-b border-line">
+      <div class="max-w-6xl mx-auto px-4 pt-20 pb-14 text-center">
+        <p class="spec-mono text-circuit text-xs tracking-widest uppercase mb-4">Loan Calculator</p>
+        <h1 class="text-5xl md:text-6xl font-display font-bold leading-tight mb-5">
+          Estimate your<br/>monthly payments
+        </h1>
+        <p class="text-muted text-lg max-w-xl mx-auto mb-8">
+          Plug in a vehicle price, down payment, interest rate, and loan term to see what your financing could look like.
+        </p>
+      </div>
+    </section>
+
+    <!-- CALCULATOR -->
+    <section class="max-w-4xl mx-auto px-4 py-12">
+      <div class="bg-surface border border-line rounded-card p-8">
+        <form id="loanForm" class="space-y-6" onsubmit="return false;">
+
+          <div>
+            <label class="block text-sm font-medium text-muted mb-1">🚗 Select a Vehicle (optional — autofills price)</label>
+            <select id="vehicleSelect" class="w-full rounded-lg px-4 py-3">
+              <option value="">-- Enter price manually --</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-muted mb-1">💰 Vehicle Price ($)</label>
+              <input type="number" id="price" placeholder="e.g. 55000" min="0" required class="w-full rounded-lg px-4 py-3" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-muted mb-1">💵 Down Payment ($)</label>
+              <input type="number" id="downPayment" placeholder="e.g. 5000" min="0" value="0" required class="w-full rounded-lg px-4 py-3" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-muted mb-1">📈 Annual Interest Rate (%)</label>
+              <input type="number" id="interestRate" placeholder="e.g. 6.5" min="0" step="0.01" required class="w-full rounded-lg px-4 py-3" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-muted mb-1">📅 Loan Duration (years)</label>
+              <select id="duration" required class="w-full rounded-lg px-4 py-3">
+                <option value="" disabled selected>Select term...</option>
+                <option value="2">2 years</option>
+                <option value="3">3 years</option>
+                <option value="4">4 years</option>
+                <option value="5">5 years</option>
+                <option value="6">6 years</option>
+                <option value="7">7 years</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" onclick="calculateLoan()" class="btn-calculate">
+            🧮 Calculate Monthly Payment
+          </button>
+        </form>
+      </div>
+
+      <div id="errorMessage" class="mt-4 bg-red-900/20 border border-red-500/30 rounded-card p-4 text-red-400" style="display:none;"></div>
+
+      <div id="resultsSection" class="mt-8"></div>
+    </section>
+
+    <script>
+      // ---- auth state + logout (same pattern as the rest of the site) ----
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const authArea = document.getElementById('nav-auth-area');
+      authArea.innerHTML = user
+        ? `<div class="flex items-center gap-3">
+             <span class="text-muted">Welcome, ${user.fname}!</span>
+             <button onclick="logout()" class="text-circuit hover:underline">Sign out</button>
+           </div>`
+        : `<a href="/login.html" class="bg-accent text-bg font-medium px-4 py-1.5 rounded-card hover:opacity-90">Login / Register</a>`;
+
+      function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+      }
+
+      // ---- populate vehicle dropdown from the catalogue API ----
+      const VEHICLES_API = 'http://localhost:5000/api/vehicles';
+
+      async function loadVehicleOptions() {
+        try {
+          const res = await fetch(VEHICLES_API);
+          const vehicles = await res.json();
+          const select = document.getElementById('vehicleSelect');
+          vehicles.forEach(v => {
+            const option = document.createElement('option');
+            option.value = v.price;
+            option.textContent = `${v.brand} ${v.model} ${v.year} — $${Number(v.price).toLocaleString()}`;
+            select.appendChild(option);
+          });
+        } catch (err) {
+          console.error('Could not load vehicles for loan calculator:', err);
+        }
+      }
+
+      document.getElementById('vehicleSelect').addEventListener('change', (e) => {
+        if (e.target.value) {
+          document.getElementById('price').value = e.target.value;
+        }
+      });
+
+      loadVehicleOptions();
+
+      // ---- loan math ----
+      function calculateLoan() {
+        const price        = parseFloat(document.getElementById('price').value);
+        const downPayment   = parseFloat(document.getElementById('downPayment').value) || 0;
+        const annualRate    = parseFloat(document.getElementById('interestRate').value);
+        const years         = parseInt(document.getElementById('duration').value);
+        const errorMessage  = document.getElementById('errorMessage');
+        const resultsSection = document.getElementById('resultsSection');
+
+        errorMessage.style.display = 'none';
+        resultsSection.innerHTML = '';
+
+        if (!price || price <= 0) {
+          errorMessage.textContent = 'Please enter a valid vehicle price.';
+          errorMessage.style.display = 'block';
+          return;
+        }
+        if (downPayment < 0 || downPayment >= price) {
+          errorMessage.textContent = 'Down payment must be less than the vehicle price.';
+          errorMessage.style.display = 'block';
+          return;
+        }
+        if (annualRate === null || isNaN(annualRate) || annualRate < 0) {
+          errorMessage.textContent = 'Please enter a valid interest rate.';
+          errorMessage.style.display = 'block';
+          return;
+        }
+        if (!years) {
+          errorMessage.textContent = 'Please select a loan duration.';
+          errorMessage.style.display = 'block';
+          return;
+        }
+
+        const principal = price - downPayment;
+        const numPayments = years * 12;
+        const monthlyRate = (annualRate / 100) / 12;
+
+        let monthlyPayment;
+        if (monthlyRate === 0) {
+          // 0% interest -> simple division, avoids divide-by-zero in the amortization formula
+          monthlyPayment = principal / numPayments;
+        } else {
+          const factor = Math.pow(1 + monthlyRate, numPayments);
+          monthlyPayment = principal * (monthlyRate * factor) / (factor - 1);
+        }
+
+        const totalPaid = monthlyPayment * numPayments;
+        const totalInterest = totalPaid - principal;
+
+        resultsSection.innerHTML = `
+          <div class="bg-surface border border-line rounded-card p-8">
+            <h2 class="text-2xl font-display font-bold mb-6 text-center">📊 Your Estimated Financing</h2>
+
+            <div class="text-center mb-8">
+              <p class="text-sm text-muted uppercase spec-mono mb-1">Estimated Monthly Payment</p>
+              <p class="text-5xl font-display font-bold text-accent">$${monthlyPayment.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="result-stat">
+                <p class="text-xs text-muted uppercase">Loan Amount</p>
+                <p class="text-lg font-semibold spec-mono">$${principal.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
+              </div>
+              <div class="result-stat">
+                <p class="text-xs text-muted uppercase">Loan Term</p>
+                <p class="text-lg font-semibold spec-mono">${years} yrs (${numPayments} mo)</p>
+              </div>
+              <div class="result-stat">
+                <p class="text-xs text-muted uppercase">Total Interest</p>
+                <p class="text-lg font-semibold spec-mono">$${totalInterest.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
+              </div>
+              <div class="result-stat">
+                <p class="text-xs text-muted uppercase">Total Cost</p>
+                <p class="text-lg font-semibold spec-mono">$${totalPaid.toLocaleString(undefined, {maximumFractionDigits: 2})}</p>
+              </div>
+            </div>
+
+            <p class="text-xs text-muted mt-6 text-center">This is an estimate for informational purposes only and does not constitute a financing offer.</p>
+          </div>
+        `;
+      }
+    </script>
+
+    <script src="/chatbot.js"></script>
+</body>
+</html>
