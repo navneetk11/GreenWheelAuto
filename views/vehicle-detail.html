@@ -55,6 +55,10 @@
     <div class="bg-decor"></div>
 <div class="bg-decor-overlay"></div>
 
+
+
+
+
   <header class="sticky top-0 z-50 py-2 px-2 sm:px-4 bg-bg/60 backdrop-blur-sm">
     <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
       <a href="/catalogue.html" class="flex items-center shrink-0 -ml-1">
@@ -159,9 +163,16 @@
         `;
     }
 
+
+
     function addToCart(vid, name, price) {
         const token = localStorage.getItem('token');
         if (!token) {
+            // Leave a note for login.html: since this login was triggered by
+            // trying to add a vehicle to the cart, send the user back to the
+            // cart page after they sign in, instead of the default catalogue page.
+            sessionStorage.setItem('postLoginRedirect', 'cart.html');
+
             alert('Please login first!');
             window.location.href = 'login.html';
             return;

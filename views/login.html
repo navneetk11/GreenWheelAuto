@@ -150,8 +150,14 @@
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
 
-                    // Success -> redirect to Catalogue page
-                    window.location.href = 'catalogue.html';
+
+                    // Success -> redirect to wherever the user was headed before
+                    // being asked to sign in (e.g. cart.html if they came from an
+                    // "Add to Cart" prompt), defaulting to the Catalogue page.
+                    const redirectTarget = sessionStorage.getItem('postLoginRedirect');
+                    sessionStorage.removeItem('postLoginRedirect');
+                    window.location.href = redirectTarget || 'catalogue.html';
+
                 } else {
                     // Error -> show message
                     messageEl.textContent = 'Invalid email or password';
