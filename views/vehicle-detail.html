@@ -166,49 +166,56 @@
 
 
     function addToCart(vid, name, price) {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            // Leave a note for login.html: since this login was triggered by
-            // trying to add a vehicle to the cart, send the user back to the
-            // cart page after they sign in, instead of the default catalogue page.
-            sessionStorage.setItem('postLoginRedirect', 'cart.html');
+    const token = localStorage.getItem('token');
+    if (!token) {
+        // Remember both where to go AND what to add, so login.html can
+        // actually complete the cart action before redirecting.
+        sessionStorage.setItem('postLoginRedirect', 'cart.html');
+        sessionStorage.setItem('pendingCartItem', JSON.stringify({ vid, name, price }));
 
-            alert('Please login first!');
-            window.location.href = 'login.html';
-            return;
-        }
-
-        fetch('/api/cart', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ vehicleId: vid, quantity: 1 })
-        })
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('cart-message').innerHTML = `
-                <div class="bg-surface border border-accent/40 rounded-card p-4 mb-4 flex items-center justify-between flex-wrap gap-3">
-                    <p class="text-sm">${name} added to cart!</p>
-                    <div class="flex gap-2">
-                        <button onclick="window.location.href='cart.html'"
-                            class="bg-accent text-bg text-sm font-medium px-4 py-1.5 rounded-card hover:opacity-90">
-                            View cart
-                        </button>
-                        <button onclick="window.location.href='catalogue.html'"
-                            class="border border-line text-sm text-muted px-4 py-1.5 rounded-card hover:text-ink">
-                            Continue shopping
-                        </button>
-                    </div>
-                </div>
-            `;
-        })
-        .catch(err => {
-            alert('Error adding to cart');
-        });
+        document.getElementById('cart-message').innerHTML = `
+            <div class="bg-surface border border-accent/40 rounded-card p-4 mb-4 flex items-center justify-between flex-wrap gap-3">
+                <p class="text-sm">Please log in to add ${name} to your cart.</p>
+                <button onclick="window.location.href='login.html'"
+                    class="bg-accent text-bg text-sm font-medium px-4 py-1.5 rounded-card hover:opacity-90">
+                    Log in
+                </button>
+            </div>
+        `;
+        return;
     }
 
+    fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ vehicleId: vid, quantity: 1 })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('cart-message').innerHTML = `
+            <div class="bg-surface border border-accent/40 rounded-card p-4 mb-4 flex items-center justify-between flex-wrap gap-3">
+                <p class="text-sm">${name} added to cart!</p>
+                <div class="flex gap-2">
+                    <button onclick="window.location.href='cart.html'"
+                        class="bg-accent text-bg text-sm font-medium px-4 py-1.5 rounded-card hover:opacity-90">
+                        View cart
+                    </button>
+                    <button onclick="window.location.href='catalogue.html'"
+                        class="border border-line text-sm text-muted px-4 py-1.5 rounded-card hover:text-ink">
+                        Continue shopping
+                    </button>
+                </div>
+            </div>
+        `;
+    })
+    .catch(err => {
+        alert('Error adding to cart');
+    });
+}
+      
     // Reviews
     function renderStars(rating) {
         const rounded = Math.round(Number(rating));

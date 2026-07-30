@@ -204,25 +204,50 @@
         }
     }
 
-    async function removeItem(cartItemId) {
-        const shouldRemove = window.confirm('Remove this vehicle from your cart?');
-        if (!shouldRemove) return;
-        const token = getToken();
+    function removeItem(cartItemId) {
+    document.getElementById('statusMessage').innerHTML = `
+        <div class="bg-surface border border-line rounded-card p-4 mb-4 flex items-center justify-between flex-wrap gap-3">
+            <p class="text-sm">Remove this vehicle from your cart?</p>
+            <div class="flex gap-2">
+                <button onclick="confirmRemove(${cartItemId})"
+                    class="bg-red-500/15 text-red-400 text-sm font-medium px-4 py-1.5 rounded-card hover:bg-red-500/25 transition-colors">
+                    Remove
+                </button>
+                <button onclick="clearMessage()"
+                    class="border border-line text-sm text-muted px-4 py-1.5 rounded-card hover:text-ink">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    `;
+}
 
-        try {
-            const response = await fetch('/api/cart/' + cartItemId, {
-                method: 'DELETE',
-                headers: { Authorization: 'Bearer ' + token }
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'The item could not be removed.');
-            showMessage('The vehicle was removed from your cart.');
-            await loadCart();
-        } catch (error) {
-            console.error(error);
-            showMessage(error.message);
-        }
+async function confirmRemove(cartItemId) {
+    const token = getToken();
+
+    try {
+        const response = await fetch('/api/cart/' + cartItemId, {
+            method: 'DELETE',
+            headers: { Authorization: 'Bearer ' + token }
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'The item could not be removed.');
+
+        document.getElementById('statusMessage').innerHTML = `
+            <div class="bg-surface border border-accent/40 rounded-card p-4 mb-4">
+                <p class="text-sm text-accent">Vehicle removed from your cart.</p>
+            </div>
+        `;
+        await loadCart();
+    } catch (error) {
+        console.error(error);
+        document.getElementById('statusMessage').innerHTML = `
+            <div class="bg-surface border border-red-500/40 rounded-card p-4 mb-4">
+                <p class="text-sm text-red-400">${error.message}</p>
+            </div>
+        `;
     }
+}
 
     function goToCheckout() { window.location.href = 'checkout.html'; }
 

@@ -146,22 +146,36 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    // Store the token so other pages (cart, etc.) can use it
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
 
+    // If they were trying to add something to the cart before being
+    // asked to log in, actually add it now that we have a valid token.
+    const pendingItem = JSON.parse(sessionStorage.getItem('pendingCartItem') || 'null');
 
-                    // Success -> redirect to wherever the user was headed before
-                    // being asked to sign in (e.g. cart.html if they came from an
-                    // "Add to Cart" prompt), defaulting to the Catalogue page.
-                    const redirectTarget = sessionStorage.getItem('postLoginRedirect');
-                    sessionStorage.removeItem('postLoginRedirect');
-                    window.location.href = redirectTarget || 'catalogue.html';
+    if (pendingItem) {
+        try {
+            await fetch('/api/cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${data.token}`
+                },
+                body: JSON.stringify({ vehicleId: pendingItem.vid, quantity: 1 })
+            });
+        } catch (err) {
+            console.log('Could not auto-add pending cart item:', err);
+        }
+        sessionStorage.removeItem('pendingCartItem');
+    }
 
-                } else {
-                    // Error -> show message
-                    messageEl.textContent = 'Invalid email or password';
-                }
+    const redirectTarget = sessionStorage.getItem('postLoginRedirect');
+    sessionStorage.removeItem('postLoginRedirect');
+    window.location.href = redirectTarget || 'catalogue.html';
+
+} else {
+    messageEl.textContent = 'Invalid email or password';
+}
             } catch (err) {
                 messageEl.textContent = 'Error connecting to server.';
             }
