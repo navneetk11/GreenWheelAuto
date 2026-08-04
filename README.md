@@ -1,154 +1,171 @@
-# GreenWheel Auto — Electric Vehicle Online Store
-EECS 4413 Section A | Summer 2026 | Group Project  
+# GreenWheel Auto
 
-## Team Members
-- Navneet 
-- Arshya 
-- Garima 
-- Anjani 
+An EV marketplace web application built for EECS 4413 (Section A, Summer 2026) — browse, filter, and purchase electric vehicles, with a range suitability checker, chatbot assistant, loan calculator, and customer reviews.
 
----
-
-## Project Overview
-GreenWheel Auto is a multi-tier e-commerce web application for buying electric vehicles online. Customers can browse, filter, sort, and purchase EVs from multiple brands. The system includes an original use case — the EV Range Suitability Checker — which recommends vehicles based on the customer's daily driving habits and Canadian winter conditions.
+**Live site:** https://dnsc59f58orhn.cloudfront.net
+**GitHub repository:** https://github.com/navneetk11/GreenWheelAuto
 
 ---
 
 ## Tech Stack
-- **Backend:** Node.js + Express.js
-- **Database:** MySQL (local)
-- **Authentication:** JWT (jsonwebtoken) + bcrypt
-- **Frontend:** Plain HTML (no CSS — D2 requirement)
+
+- **Backend:** Node.js, Express.js
+- **Database:** MySQL
+- **Frontend:** Vanilla HTML, CSS, JavaScript (no framework), styled with Tailwind CSS via CDN
+- **Authentication:** JWT (JSON Web Tokens), bcrypt for password hashing
+- **Deployment:** AWS Elastic Beanstalk (application), AWS RDS (database), Amazon CloudFront (HTTPS/CDN)
 
 ---
 
-## Setup Instructions
+## Prerequisites
 
-### 1. Clone the Repository
+Before installing, make sure you have the following installed on your machine:
+
+- [Node.js](https://nodejs.org/) (v20 or later recommended)
+- [MySQL](https://dev.mysql.com/downloads/) (v8.0 or later) — MySQL Workbench recommended for managing the database
+- [Git](https://git-scm.com/)
+- A code editor such as [VS Code](https://code.visualstudio.com/)
+
+---
+
+## Installation
+
+### 1. Clone the repository
+
 ```bash
 git clone https://github.com/navneetk11/GreenWheelAuto.git
 cd GreenWheelAuto
+```
+
+### 2. Install dependencies
+
+```bash
 npm install
 ```
 
-### 2. Create .env File
-Copy `.env.example` and rename to `.env`:
+### 3. Set up the database
 
+1. Open MySQL Workbench (or your preferred MySQL client) and connect to your local MySQL server.
+2. Run the schema file located at `database/schema.sql` to create the database and all required tables (`Users`, `Item`, `Cart`, `PO`, `POItem`, `Address`, `Reviews`, `VisitEvent`).
+3. This will also seed the database with 10 sample vehicles and a sample admin user.
+
+If you hit a "safe update mode" error while running any `UPDATE`/`DELETE` statements manually, disable it first:
+```sql
+SET SQL_SAFE_UPDATES = 0;
 ```
+
+### 4. Configure environment variables
+
+Create a `.env` file in the project root (copy from `.env.example` if provided) with the following variables:
+
+```dotenv
 DB_HOST=localhost
 DB_USER=root
-DB_PASS=your_mysql_root_password
+DB_PASS=your_mysql_password
 DB_NAME=greenwheeldb
 JWT_SECRET=greenwheelautosecret123
 PORT=5000
-
 ```
 
-### 3. Set Up Database
-- Install MySQL and open MySQL Workbench
-- Connect using root/root123
-- Go to File → Open SQL Script → select `database/schema.sql`
-- Click lightning icon to run — this creates all tables and inserts sample data
+Replace `DB_PASS` with your own local MySQL password. `DB_NAME` must match the database name created by `schema.sql`.
 
-### 4. Start the Server
+### 5. Add vehicle images
+
+Vehicle images are not stored in the database — only their file paths are. Make sure the following folder exists and contains the vehicle photos (named `v001.jpg` through `v010.jpg`, matching the `vid` of each vehicle):
+
+```
+public/images/vehicles/
+```
+
+The site's logo should be placed at:
+```
+public/images/logo.png
+```
+
+### 6. Run the server
+
 ```bash
 node server.js
 ```
-Server runs on: `http://localhost:5000`
+
+You should see:
+```
+Server running on port 5000
+```
+
+### 7. Open the site
+
+Go to:
+```
+http://localhost:5000/
+```
+
+This loads the vehicle catalogue directly — no login required to browse. You'll need to register/log in to add items to your cart, check out, or leave a review.
 
 ---
 
-## How to Use the Application
+## Test Account
 
-### Full User Flow
-1. **Register** → `http://localhost:5000/register.html`
-2. **Login** → `http://localhost:5000/login.html`
-3. **Browse Catalogue** → `http://localhost:5000/catalogue.html`
-4. **Filter/Sort** vehicles by brand, shape, year, price, mileage
-5. **View Vehicle Details** → click "View Details" on any vehicle
-6. **Add to Cart** → click "Add to Cart" on vehicle detail page
-7. **View Cart** → `http://localhost:5000/cart.html`
-8. **Checkout** → `http://localhost:5000/checkout.html`
-9. **Range Checker** → `http://localhost:5000/range-checker.html`
+An admin account is seeded by the schema for testing:
 
-### Test Account
-Email:    testuser@test.com
-Password: password123
-Or register a new account.
+```
+Email: admin@greenwheelAuto.com
+Password: admin123
+```
+
+You can also register a new account directly through the site's Register page.
 
 ---
 
-## API Endpoints
+## Features
 
-### Auth Routes
-POST /api/auth/register   — Register new account
-POST /api/auth/login      — Login and get JWT token
-POST /api/auth/logout     — Logout
-
-### Vehicle Routes
-GET /api/vehicles                    — Browse all vehicles
-GET /api/vehicles/filter?brand=Tesla — Filter vehicles
-GET /api/vehicles/filter?sortBy=price&sortOrder=asc — Sort vehicles
-GET /api/vehicles/:id                — View vehicle details
-
-### Cart & Checkout Routes
-GET    /api/cart              — View cart (requires token)
-POST   /api/cart              — Add to cart (requires token)
-PUT    /api/cart/:itemId      — Update quantity (requires token)
-DELETE /api/cart/:itemId      — Remove from cart (requires token)
-POST   /api/cart/checkout     — Checkout (requires token)
-POST   /api/cart/payment      — Process payment (requires token)
-GET    /api/cart/orders/:id   — View order (requires token)
-
-### Range Checker Routes
-POST /api/range/check         — Check EV suitability
-GET  /api/range/vehicles      — All vehicles with range data
-GET  /api/range/statistics    — Range statistics
-GET  /api/range/top           — Top range vehicles
+- Browse, filter, and sort the vehicle catalogue
+- Hot Deals section (lowest-priced vehicles)
+- User registration, login, and logout (JWT-based)
+- Shopping cart — add, update quantity, and remove items
+- Checkout with shipping and payment form
+- Vehicle reviews with 5-star ratings
+- EV Range Suitability Checker (distinguished feature)
+- Rule-based chatbot assistant (available on all pages)
+- Loan calculator
+- Cloud-native deployment on AWS with HTTPS
 
 ---
 
-## Payment System
-The payment service mimics real payment processing:
-- Request 1 →  APPROVED
-- Request 2 →  APPROVED  
-- Request 3 →  DENIED
-- Request 4 →  APPROVED (cycle repeats)
+## Project Structure
+
+```
+GreenWheelAuto/
+├── config/           # Database configuration
+├── controllers/      # Route handler logic
+├── dao/              # Data access layer (DAO pattern)
+├── database/         # schema.sql and seed data
+├── middleware/        # Auth middleware
+├── public/
+│   └── images/       # Vehicle photos, logo, background assets
+├── routes/           # Express route definitions
+├── views/            # Frontend HTML/CSS/JS pages
+├── server.js         # Application entry point
+├── package.json
+└── .env              # Environment variables (not committed to Git)
+```
 
 ---
 
-## Running Postman Tests
-Postman collections are in the `postman/` folder:
+## Deployment Notes
 
-| File | Routes Tested |
-|------|--------------|
-| vehicles_tests.json | UC03, UC04, UC05, UC06 |
-| auth_tests.json | UC01, UC02 |
-| cart_tests.json | UC11, UC12, UC13 |
-| range-check-tests.json | UC16 |
+The production deployment uses:
+- **AWS Elastic Beanstalk** to host the Node.js/Express backend
+- **AWS RDS (MySQL)** for the production database, separate from the application server
+- **Amazon CloudFront** in front of Elastic Beanstalk to provide HTTPS, since a single-instance Elastic Beanstalk environment has no load balancer and therefore no HTTPS listener on its own
 
-To run:
-1. Open Postman
-2. Click Import → select JSON file from postman/ folder
-3. Make sure server is running on port 5000
-4. Click Send on each request
+If deploying your own copy, remember to set the same environment variables listed above in your Elastic Beanstalk environment's configuration (Configuration → Updates, monitoring, and logging → Environment properties), using your own RDS endpoint and credentials. Do not set `PORT` manually in Elastic Beanstalk — it is provided automatically by the platform.
 
 ---
 
-## Original Use Case — EV Range Suitability Checker (UC16)
-Enter your daily commute distance, driving type, and Canadian postal code. The system calculates the realistic winter range for each vehicle and classifies them as:
--  SUITABLE — vehicle comfortably covers your commute
--  BORDERLINE — vehicle might work but needs frequent charging
--  NOT RECOMMENDED — vehicle cannot reliably cover your commute
+## Team
 
-Winter range reduction is applied based on driving type:
-- City driving: 25% reduction
-- Mixed driving: 30% reduction
-- Highway driving: 40% reduction
-
-Home charger bonus: +5% range if customer has home charger
-
----
-
-## GitHub Repository
-https://github.com/navneetk11/GreenWheelAuto
+- Navneet Kaur
+- Arshya
+- Garima
+- Anjani
